@@ -33,13 +33,24 @@
 		let timestamp = document.getElementById("timestamp");
 		var date = new Date(pos.timestamp); 
 		timestamp.innerHTML = "Le timestamp est "+date+".";
+
+		// if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+		// 	console.log('Bravo, vous avez atteint la cible');
+		// 	navigator.geolocation.clearWatch(id);
+		// }
+
+		// target = {
+		// 	latitude : 0,
+		// 	longitude: 0
+		// };
 	}
 
 	function error(err) {
 		console.warn(`ERREUR (${err.code}): ${err.message}`);
 	}
 
-	navigator.geolocation.getCurrentPosition(success, error);
+	navigator.geolocation.getCurrentPosition(success, error); // si à un instant t
+	//navigator.geolocation.watchPosition(success,error); // si position à surveiller
 	
 </script>
 </html>

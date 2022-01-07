@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mylene TD1 exo3</title>
+	<meta charset="utf-8"/>
+</head>
+<body>
+	<h3>TD1</h3>
+	<h1>exo3</h1><br/>
+	<p id="test">?</p><br/>
+	<br/>
+	<p id="oX">orientation X </p><br/>
+	<p id="oY">orientation Y </p><br/>
+	<p id="oZ">orientation Z </p><br/>
+	<p id="oAlpha">orientation alpha </p><br/>
+	<p id="oBeta">orientation beta </p><br/>
+	<p id="oGamma">orientation gamma </p><br/>
+	<p id="mvtrotation">Mouvement de rotation : </p><br/>
+	<p id="mvtAcceleration">Mouvement d'accélération : </p><br/>
+	
+</body>
+
+<script>
+
+	function success(pos) {
+			var crd = pos.coords;
+
+			let test = document.getElementById('test');		
+			test.innerHTML = "test : " + crd.longitude;
+
+			// if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+			// 	console.log('Bravo, vous avez atteint la cible');
+			// 	navigator.geolocation.clearWatch(id);
+			// }
+
+			// target = {
+			// 	latitude : 0,
+			// 	longitude: 0
+			// };
+		}
+
+		function error(err) {
+			console.warn(`ERREUR (${err.code}): ${err.message}`);
+		}
+
+	navigator.geolocation.watchPosition(success,error); // position à surveiller
+
+	window.addEventListener('deviceorientation', function(event) {
+	console.log("z : " + event.alpha + "\n x : " + event.beta + "\n y : " + event.gamma);
+	});
+	
+	window.addEventListener('devicemotion', function(event) {
+		console.log(event.acceleration.x + ' m/s2 (pour x)\n' + event.acceleration.y + ' m/s2 (pour y)');
+	});
+
+	
+</script>
+</html>
