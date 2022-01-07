@@ -58,8 +58,14 @@
 	window.addEventListener('devicemotion', function(event) {
   		console.log("accélération (sans la gravité) en m/s pour x : "+event.acceleration.x + "y : "+event.acceleration.y + "z : "+event.acceleration.z);
 		
-		let test = document.getElementById('test');		
-		test.innerHTML = "test : " +event.accelerationIncludingGravity.x;
+		let aX = document.getElementById('aX');		
+		aX.innerHTML = "acceleration X : " +event.accelerationIncludingGravity.x;
+
+		let aY = document.getElementById('aY');		
+		aY.innerHTML = "acceleration Y : " +event.accelerationIncludingGravity.y;
+
+		let aZ = document.getElementById('aZ');		
+		aZ.innerHTML = "acceleration Z : " +event.accelerationIncludingGravity.z;
 
 	});
 
