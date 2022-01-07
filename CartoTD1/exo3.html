@@ -47,8 +47,15 @@
 
 	window.addEventListener('deviceorientation', function(event) {
 		console.log("z : " + event.alpha + "\n x : " + event.beta + "\n y : " + event.gamma);
+		
 		let ox = document.getElementById('oX');		
 		ox.innerHTML = "ox = " +event.beta;
+
+		let oy = document.getElementById('oY');		
+		oy.innerHTML = "oy = " +event.gamma;
+
+		let oz = document.getElementById('oZ');		
+		oz.innerHTML = "oz = " +event.alpha;
 	});
 	
 	window.addEventListener('devicemotion', function(event) {
