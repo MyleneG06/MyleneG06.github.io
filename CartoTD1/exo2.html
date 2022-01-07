@@ -19,12 +19,6 @@
 	
 	function success(pos) {
 		var crd = pos.coords;
-		
-		console.log('Votre position actuelle est :');
-		console.log(`Latitude : ${crd.latitude}`);
-		console.log(`Longitude : ${crd.longitude}`);
-		console.log(`La précision est de ${crd.accuracy} mètres.`);
-		console.log(`La vitesse est de ??? km/h.`);
 
 		let position = document.getElementById('position');		
 		position.innerHTML = "Votre position actuelle est : " + crd.longitude + " (longitude) / " + crd.latitude + " (latitude)";
@@ -33,12 +27,12 @@
 		precision.innerHTML = "La précision est de "+crd.accuracy+" mètres.";
 
 		let vitesse = document.getElementById("vitesse");
-		//?
-		vitesse.innerHTML = "La vitesse est de ??? km/h.";
+		if (!crd.speed){crd.speed=0;} //à chercher !
+		vitesse.innerHTML = "La vitesse est de "+crd.speed+" m/s.";
 
 		let timestamp = document.getElementById("timestamp");
-		// var timestampVal = geolocationPositionInstance.timestamp;
-		timestamp.innerHTML = "Le timestamp est ??? ";
+		var date = new Date(pos.timestamp); 
+		timestamp.innerHTML = "Le timestamp est "+date+".";
 	}
 
 	function error(err) {
