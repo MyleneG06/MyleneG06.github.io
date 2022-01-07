@@ -46,7 +46,9 @@
 	navigator.geolocation.watchPosition(success,error); // position à surveiller
 
 	window.addEventListener('deviceorientation', function(event) {
-	console.log("z : " + event.alpha + "\n x : " + event.beta + "\n y : " + event.gamma);
+		console.log("z : " + event.alpha + "\n x : " + event.beta + "\n y : " + event.gamma);
+		let ox = document.getElementById('oX');		
+		ox.innerHTML = "ox = " +event.beta;
 	});
 	
 	window.addEventListener('devicemotion', function(event) {
