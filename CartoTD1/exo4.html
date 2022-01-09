@@ -28,15 +28,23 @@ function getGesturePointFromEvent(evt) {
       point.x = evt.clientX;
       point.y = evt.clientY;
     }
+     return point;    
+}
 
-    return point;
-  }
+document.body.addEventListener('click',function(evt){
+    var point = getGesturePointFromEvent(evt);
+    affichage(point,"click.");
+});
 
-document.getElementById('test').innerHTML = point;
+document.body.addEventListener('touchstart',function(evt){
+    var point = getGesturePointFromEvent(evt);
+    affichage(point,"touchstart.");
+});
 
-
-document.getElementById('position').innerHTML = "La position cliquée est : ";
-document.getElementById('event').innerHTML = "Le type d'évènement reçu est : ";
+var affichage = function (point, type){
+    document.getElementById('position').innerHTML = "La position cliquée est :  x=" + point.x + " et y=" +point.y;
+    document.getElementById('event').innerHTML = "Le type d'évènement reçu est : "+type;
+}
 
 	
 </script>
