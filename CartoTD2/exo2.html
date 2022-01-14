@@ -64,11 +64,39 @@ var coordM = "[43.299999, 5.4]";
 			fillColor: '#03f',
 			fillOpacity: 0.5,
 		}).addTo(map);
-		NiceMarseille.bindPopup("Distance Nice ("+coordN+") - Marseille ("+coordM+") : calcul à faire");
+		NiceMarseille.bindPopup("Distance Nice ("+coordN+") - Marseille ("+coordM+") : " + Math.round(findDistance()/1000) + "km");
 
 
 // calculer la distance entre Marseille et Nice et l'afficher dans la popup
 
+function findDistance() {
+   var R = 6371e3; // R is earth’s radius
+   var lat1 = 43.7101728; // lat Nice
+   var lat2 = 43.299999;         // lat Marseille
+   var lon1 = 7.2619532; // lon Nice
+   var lon2 = 5.4;         // lon Marseille
+   var lat1radians = toRadians(lat1);
+   var lat2radians = toRadians(lat2);
+
+   var latRadians = toRadians(lat2-lat1);
+   var lonRadians = toRadians(lon2-lon1);
+
+   var a = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+        Math.cos(lat1radians) * Math.cos(lat2radians) *
+        Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+   var d = R * c;
+
+   return d;
+}
+
+function toRadians(val){
+    var PI = 3.1415926535;
+    return val / 180.0 * PI;
+}
+
+//
 
 		let carte = document.getElementById('map');		
 		carte.append(map);
