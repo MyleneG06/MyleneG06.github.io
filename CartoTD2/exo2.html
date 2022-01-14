@@ -3,10 +3,81 @@
 <head>
 	<title>Mylene TD2 exo2</title>
 	<meta charset="utf-8"/>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+	integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+	crossorigin=""/> <!-- leaflet-step1 -->
+
+
 </head>
 <body>
 	<h3>TD2</h3>
 	<p>exo2</p><br/>
 	
+	<div id="map"></div>
+	
+	<style>#map { height: 100vh; }</style>
+	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+	integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+	crossorigin=""></script> <!-- leaflet-step2 -->
+
+	<script>
+		function success(pos) {
+		var crd = pos.coords;
+		console.log("Votre position actuelle est : " + crd.longitude + " (longitude) / " + crd.latitude + " (latitude)");
+		
+		var map = L.map('map').setView([crd.latitude, crd.longitude], 2);
+		L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
+		}).addTo(map);
+
+
+		var circle = L.circle([crd.latitude, crd.longitude], {
+			color: 'green',
+			fillColor: '#0fc',
+			fillOpacity: 0.5,
+			radius: crd.accuracy
+		}).addTo(map);	
+
+
+		var triangle = L.polygon([
+			[18.466, -66.118],
+			[32.321, -64.757],
+			[25.774, -80.19]],
+		{
+			color: 'red',
+			fillColor: '#f03'
+		})
+		.addTo(map);
+		triangle.bindPopup("le triangle des bermudes")
+
+
+
+		var NiceMarseille = L.polygon([
+			[43.7101728, 7.2619532], //Nice
+			[43.299999, 5.4] //Marseille
+		],
+		{
+			color: 'blue',
+			fillColor: '#03f',
+			fillOpacity: 0.5,
+		}).addTo(map);
+
+
+// calculer la distance
+
+
+		let carte = document.getElementById('map');		
+		carte.append(map);
+		}
+		function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+		navigator.geolocation.getCurrentPosition(success, error); 
+
+		
+
+		
+
+		
+	</script>
 </body>
 </html>
