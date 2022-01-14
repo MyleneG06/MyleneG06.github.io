@@ -1,12 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Mylene TD2 exo3</title>
-	<meta charset="utf-8"/>
-</head>
-<body>
-	<h3>TD2</h3>
-	<p>exo3</p><br/>
+	<head>
+		<title>Mylene TD2 exo3</title>
+		<meta charset="utf-8"/>
 	
-</body>
-</html>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/> <!-- leaflet-step1 -->
+	
+	
+	</head>
+	<body>
+		<h3>TD2</h3>
+		<p>exo3 : j'affiche les contours de la commune où je me trouve</p><br/>
+
+
+		
+		<div id="map"></div>
+		
+		<style>#map { height: 100vh; }</style>
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script> <!-- leaflet-step2 -->
+	
+		<script>
+			function success(pos) {
+			var crd = pos.coords;
+			
+			var map = L.map('map').setView([crd.latitude, crd.longitude], 10);
+			L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
+			}).addTo(map);
+
+			var url1 = "https://geo.api.gouv.fr/departements/06/communes?fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=centre";
+			var url2 = "https://geo.api.gouv.fr/communes?lat="+crd.latitude+"&lon="+crd.longitude+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
+
+			function reqListener () {
+				L.geoJson(JSON.parse(this.response)).addTo(map);
+			}
+			var oReq = new XMLHttpRequest();
+			oReq.addEventListener("load", reqListener);
+			oReq.open("GET", url2);
+			oReq.send();
+
+	
+			let carte = document.getElementById('map');		
+			carte.append(map);
+			}
+			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+			navigator.geolocation.getCurrentPosition(success, error); 
+	
+			
+	
+			
+	
+			
+		</script>
+	</body>
+	</html>
