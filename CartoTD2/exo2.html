@@ -52,6 +52,8 @@
 		triangle.bindPopup("le triangle des bermudes")
 
 
+var coordN = "[43.7101728, 7.2619532]";
+var coordM = "[43.299999, 5.4]";
 
 		var NiceMarseille = L.polygon([
 			[43.7101728, 7.2619532], //Nice
@@ -62,9 +64,10 @@
 			fillColor: '#03f',
 			fillOpacity: 0.5,
 		}).addTo(map);
+		NiceMarseille.bindPopup("Distance Nice ("+coordN+") - Marseille ("+coordM+") : calcul à faire");
 
 
-// calculer la distance
+// calculer la distance entre Marseille et Nice et l'afficher dans la popup
 
 
 		let carte = document.getElementById('map');		
