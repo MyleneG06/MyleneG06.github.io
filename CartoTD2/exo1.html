@@ -24,7 +24,7 @@
 		var crd = pos.coords;
 		console.log("Votre position actuelle est : " + crd.longitude + " (longitude) / " + crd.latitude + " (latitude)");
 		
-		var map = L.map('map').setView([crd.latitude, crd.longitude], 5);
+		var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
