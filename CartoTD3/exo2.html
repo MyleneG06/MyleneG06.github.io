@@ -13,16 +13,18 @@
 	<script src="three.js"></script>
 	<script src="orbitControls.js"></script>
 	<script>
+
 		//scene
 		const scene = new THREE.Scene();
 
 		//light
 		light = new THREE.DirectionalLight( 0xb4e7f2, 1.5 );
-		light.position.set( -10, 10, 10 );
+		light.position.set( -10, 2, 5 );
 		light.position.x = 1;
 		light.target.position = 160;
-
-		ambiance = new THREE.AmbientLight( 0x444444 );
+		scene.add(light);
+		// ambiance = new THREE.AmbientLight( 0x444444 );
+		// scene.add(ambiance);
 
 		//texture montagne
 		var loader = new THREE.TextureLoader();
@@ -38,12 +40,10 @@
 		//sphere
 		const geoglobe = new THREE.SphereGeometry(1,25,16);
 		const matglobe = new THREE.MeshBasicMaterial( { color: "#FF9900"} );
-
 		const globe = new THREE.Mesh( geoglobe, mattexture );
 		globe.position.x = -10;
 		globe.position.y = -10;
 		scene.add( globe );
-
 
 		//camera
 		const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -66,7 +66,6 @@
 			renderer.render( scene, camera );
 		};
 		animate();
-
 
 	</script>
 </body>
