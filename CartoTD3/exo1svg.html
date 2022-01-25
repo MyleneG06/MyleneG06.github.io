@@ -7,6 +7,25 @@
 <body>
 	<h3>TD3</h3>
 	<p>exo 1 SVG</p><br/>
+
+	<svg width="900" height="600">
+		<rect id="ciel" x="0" y="0" width="900" height="400" style="fill:rgb(74, 144, 236);stroke-width:3;stroke:rgb(105, 103, 103)" />
+		<rect id="prairie" x="0" y="400" width="900" height="200" style="fill:rgb(6, 121, 12);stroke-width:3;stroke:rgb(0,0,0)" />
+		<rect id="maison" x="50" y="420" width="150" height="150" style="fill:rgb(201, 132, 6);stroke-width:3;stroke:rgb(0,0,0)" />
+		<rect id="porte" x="70" y="500" width="40" height="55" style="fill:rgb(82, 54, 3);stroke-width:3;stroke:rgb(0,0,0)" />
+		<polygon id="toit" points="50,420 200,420 125,350" style="fill:rgb(221, 15, 8);stroke:purple;stroke-width:1" />
+		<circle id="soleil" cx="700" cy="80" r="40" stroke="green" stroke-width="4" fill="yellow" />
+	  </svg>
 	
+	  <script>
+		// changer la couleur du ciel quand on clique sur le soleil
+		var ciel = document.getElementById('ciel'); 
+		document.getElementById('soleil').addEventListener('click', e => {ciel.style = "fill:rgb(105,103,103);stroke-width:3;stroke:rgb(0,0,0)"});
+		
+		// changer la couleur de la porte quand la souris passe dessus
+		var porte = document.getElementById('porte');
+		porte.onmouseover = function(){porte.style.fill = "rgb(0,0,0)"};
+
+	  </script>
 </body>
 </html>
