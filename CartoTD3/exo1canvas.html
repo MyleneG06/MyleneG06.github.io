@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mylene TD3 exo1 Canvas</title>
+	<meta charset="utf-8"/>
+</head>
+<body>
+	<h3>TD3</h3>
+	<p>exo1 Canvas</p><br/>
+	
+	<canvas id="dessin" width="900" height="600">
+		<img id="montagne" src="montagne.jpg" alt="montagne en fond">
+		Your browser does not support the HTML5 canvas tag.
+	</canvas>
+	<script>
+		window.onload = function() {
+			var canvas = document.getElementById("dessin");
+			var ctx = canvas.getContext("2d");
+			var img = document.getElementById("montagne");
+			ctx.drawImage(img, 10, 10);
+			//mur
+			ctx.fillStyle = 'orange';
+			ctx.fillRect(700, 400, 150, 150);
+			//porte
+			ctx.fillStyle = 'brown';
+			ctx.fillRect(750, 480, 40, 55);
+
+			//soleil
+			ctx.beginPath();
+			ctx.fillStyle = 'yellow';
+			ctx.arc(80, 80, 40, 0, 360, 0);
+			ctx.fill()
+			
+			//toit
+			ctx.beginPath();
+			ctx.fillStyle = 'red';
+			ctx.moveTo(700, 400);
+			ctx.lineTo(850, 400);
+			ctx.lineTo(775, 300);
+			ctx.fill();
+
+		};
+		</script>
+	
+</body>
+</html>
