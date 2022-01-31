@@ -74,8 +74,10 @@
 
 
 // Affichage position en temps réel
+				var msg = 'vous êtes ici';
+				if(crd.altitude != null) {msg = 'vous êtes ici à une altitude de ' + crd.altitude + 'm.'}
 				L.marker([crd.latitude, crd.longitude]).addTo(map)
-					.bindPopup('vous êtes ici à une altitude de ' + crd.altitude + 'm.')
+					.bindPopup(msg)
 					.openPopup();
 				
 				position.innerHTML = "POSITION EN TEMPS REEL : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
