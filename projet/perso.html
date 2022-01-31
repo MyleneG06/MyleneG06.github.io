@@ -10,6 +10,9 @@
 	<body>
 
 	<!-- RANDO -->
+	</br>
+	<p id="position"></p>
+	</br> </br>
 	<button id="start">Démarrer</button> 
 	<p id="startInfo"></p>
 	<p id="stopInfo"></p>
@@ -47,6 +50,7 @@
 		
 			navigator.geolocation.getCurrentPosition(success, error); 
 
+			let position = document.getElementById('position');
 			let start = document.getElementById('start');
 			let startInfo = document.getElementById('startInfo');
 			let stop = document.getElementById('stop');
@@ -74,11 +78,13 @@
 
 // Affichage position en temps réel
 				L.marker([crd.latitude, crd.longitude]).addTo(map)
-					.bindPopup('vous êtes ici')
+					.bindPopup('vous êtes ici à une altitude de ' + crd.altitude + 'm.')
 					.openPopup();
+				
+				position.innerHTML = "POSITION EN TEMPS REEL : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
 
 
-// Affichage du rayon
+// Affichage du rayon saisi
 				rayon.addEventListener("click", function(){
 					var circle = L.circle([crd.latitude, crd.longitude], {
 					color: 'green',
