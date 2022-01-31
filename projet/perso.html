@@ -13,7 +13,9 @@
 	</br>
 	<p id="position"></p>
 	</br>
-	<button id="start">Démarrer</button><button id="stop">Arrêter</button> 
+	<button id="start">Démarrer</button><p id="startInfo"></p>
+	</br>
+	<button id="stop">Arrêter</button> <p id="stopInfo"></p>
 	</br>
 	<p id="stats"></p>
 	</br>
@@ -45,7 +47,8 @@
 
 		<script>
 		
-			navigator.geolocation.getCurrentPosition(success, error); 
+			navigator.geolocation.getCurrentPosition(success, error);
+			//var surv = navigator.geolocation.watchPosition(success, error); 
 
 			let position = document.getElementById('position');
 			let start = document.getElementById('start');
@@ -64,7 +67,7 @@
 			let surface = document.getElementById('surface');
 
 			function success(pos) {
-				
+				console.log("success");
 				var crd = pos.coords;
 				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
 				
@@ -73,14 +76,14 @@
 				}).addTo(map);
 
 
-// Affichage position en temps réel
+// Affichage position
 				var msg = 'vous êtes ici';
 				if(crd.altitude != null) {msg = 'vous êtes ici à une altitude de ' + crd.altitude + 'm.'}
 				L.marker([crd.latitude, crd.longitude]).addTo(map)
 					.bindPopup(msg)
 					.openPopup();
 				
-				position.innerHTML = "POSITION EN TEMPS REEL : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
+				position.innerHTML = "POSITION AU CHARGEMENT : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
 
 
 // Affichage du rayon saisi
@@ -117,25 +120,28 @@
 				var altitudeMax;
 				var altitudeMin;
 				var distanceTot;
-				let infoStart; 
-				let infoStop;
 				var A;
 
 				start.addEventListener("click",function(){
+
 					stop.disabled = false;
 					start.disabled = true;
+
+					startInfo.innerHTML = "Horaire de départ : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+					position.innerHTML = "";
 					
 					distanceTot = 0;
-					infoStart = pos;
 
-					A = infoStart.coords;
+					A = pos.coords;
+					console.log("A : "  + A);
 					altitudeMin = A.altitude;
+					console.log("altitude min : "  + altitudeMin);
 					altitudeMax = A.altitude;
+					console.log("altitude max : "  + altitudeMax);
 
 					setInterval(function(){
 						var B = pos.coords;
 	
-						
 	// On affiche le petit trajet parcouru en fonction du temps défini
 						var step = L.polygon([
 							[A.latitude, A.longitude], //point précédent
@@ -164,8 +170,8 @@
 					stop.disabled = true;
 					start.disabled = false;
 
-					infoStop = pos;
-					//
+					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+
 					var B = pos.coords;
 					var step = L.polygon([
 						[A.latitude, A.longitude], //point précédent
@@ -176,8 +182,14 @@
 						fillColor: '#03f',
 						fillOpacity: 0.5,
 					}).addTo(map);
+
+					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
 					distanceTot += Math.round(findDistance(A,B)/1000);
-					stats.innerHTML = "STATISTIQUE pour "+Date(pos.timestamp)+"</br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+
+					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+
+					//navigator.geolocation.clearWatch(surv);
 				});
 
 				function findDistance(A,B) {
