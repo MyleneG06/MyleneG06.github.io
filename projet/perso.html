@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>App Mymy</title>
+		<meta charset="utf-8"/>
+	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/> <!-- leaflet-step1 -->
+
+	</head>
+	<body>
+	<!-- RANDO -->
+	<button id="start">Démarrer</button>
+	<button id="stop">Arrêter</button>
+	</br> </br>
+
+	<!-- RAYON -->
+		<p>Tracer un rayon autour de ma position : </br> (pour effacer, recharger la page)</p>
+		<input id="saisierayon" placeholder="rayon en km" />
+		<button id="validsaisie">valider rayon</button>
+	</br> </br>
+
+	<!-- INFOS -->
+		<label>Région : </label><text id="region"></text>
+	</br>
+		<label>Département : </label><text id="departement"></text>
+	</br>
+		<label>Commune : </label><text id="commune"></text>
+	</br>
+		<label>Population : </label><text id="population"></text>
+	</br>
+		<label>Surface : </label><text id="surface"></text>
+	</br></br>
+
+	<!-- CARTE -->
+		<div id="map"></div>
+		<style>#map { height: 100vh; }</style>		
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+
+		<script>
+		
+			navigator.geolocation.getCurrentPosition(success, error); 
+
+			let start = document.getElementById('start')
+			let stop = document.getElementById('stop');
+			//var date = new Date(pos.timestamp); 
+
+// 			var NiceMarseille = L.polygon([
+// 			[43.7101728, 7.2619532], //Nice
+// 			[43.299999, 5.4] //Marseille
+// 		],
+// 		{
+// 			color: 'blue',
+// 			fillColor: '#03f',
+// 			fillOpacity: 0.5,
+// 		}).addTo(map);
+// 		NiceMarseille.bindPopup("Distance Nice ("+coordN+") - Marseille ("+coordM+") : " + Math.round(findDistance()/1000) + "km");
+
+
+// // calculer la distance entre Marseille et Nice et l'afficher dans la popup
+
+// function findDistance() {
+//    var R = 6371e3; // R is earth’s radius
+//    var lat1 = 43.7101728; // lat Nice
+//    var lat2 = 43.299999;         // lat Marseille
+//    var lon1 = 7.2619532; // lon Nice
+//    var lon2 = 5.4;         // lon Marseille
+//    var lat1radians = toRadians(lat1);
+//    var lat2radians = toRadians(lat2);
+
+//    var latRadians = toRadians(lat2-lat1);
+//    var lonRadians = toRadians(lon2-lon1);
+
+//    var a = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+//         Math.cos(lat1radians) * Math.cos(lat2radians) *
+//         Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+//    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+//    var d = R * c;
+
+//    return d;
+// }
+
+			let rayon = document.getElementById('validsaisie')
+			let saisie = document.getElementById('saisierayon');
+
+			let region = document.getElementById('region');	
+			let departement = document.getElementById('departement');	
+			let commune = document.getElementById('commune');	
+			let population = document.getElementById('population');	
+			let surface = document.getElementById('surface');
+
+			function success(pos) {
+				
+				var infoStart;
+				var infoStop;
+				var crd = pos.coords;
+				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
+
+				console.log("start : " + infoStart + "  / stop : "+ infoStop);
+				console.log(crd.altitude);
+				
+				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
+				}).addTo(map);
+//Affichage position
+				L.marker([crd.latitude, crd.longitude]).addTo(map)
+					.bindPopup('vous êtes ici')
+					.openPopup();
+
+// Affichage du rayon
+				rayon.addEventListener("click", function(){
+					var circle = L.circle([crd.latitude, crd.longitude], {
+					color: 'green',
+					fillColor: '#0fc',
+					fillOpacity: 0.5,
+					radius: saisie.value*1000
+				}).addTo(map);})
+
+				var url1 = "https://geo.api.gouv.fr/departements/06/communes?fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=centre";
+				var url = "https://geo.api.gouv.fr/communes?lat="+crd.latitude+"&lon="+crd.longitude+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
+
+				function reqListener () {
+					L.geoJson(JSON.parse(this.response)).addTo(map);
+					region.innerHTML = JSON.parse(this.response).features[0].properties.region.nom;
+					departement.innerHTML = JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ").";
+					commune.innerHTML = JSON.parse(this.response).features[0].properties.nom;
+					population.innerHTML = JSON.parse(this.response).features[0].properties.population + " habitants.";
+					surface.innerHTML = JSON.parse(this.response).features[0].properties.surface + " m2.";
+				}
+
+				var oReq = new XMLHttpRequest();
+				oReq.addEventListener("load", reqListener);
+				oReq.open("GET", url);
+				oReq.send();
+
+				let carte = document.getElementById('map');		
+				carte.append(map);
+			}
+
+
+			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+		
+
+			
+		</script>
+	</body>
+</html>

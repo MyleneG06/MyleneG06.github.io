@@ -12,8 +12,8 @@
 	</head>
 	<body>
 		<h3>TD2</h3>
-		<p>exo3 : j'affiche les contours de la commune où je me trouve</p><br/>
-
+		<p>exo3 : j'affiche ma position et les contours de la commune où je me trouve</p><br/>
+	
 
 		
 		<div id="map"></div>
@@ -31,6 +31,10 @@
 			L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
 				attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
 			}).addTo(map);
+
+			L.marker([crd.latitude, crd.longitude]).addTo(map)
+			.bindPopup('vous êtes ici')
+			.openPopup();
 
 			var url1 = "https://geo.api.gouv.fr/departements/06/communes?fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=centre";
 			var url2 = "https://geo.api.gouv.fr/communes?lat="+crd.latitude+"&lon="+crd.longitude+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
