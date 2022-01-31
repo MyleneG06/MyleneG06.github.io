@@ -12,14 +12,11 @@
 	<!-- RANDO -->
 	</br>
 	<p id="position"></p>
-	</br> </br>
-	<button id="start">Démarrer</button> 
-	<p id="startInfo"></p>
-	<p id="stopInfo"></p>
-	<button id="stop">Arrêter</button> 
+	</br>
+	<button id="start">Démarrer</button><button id="stop">Arrêter</button> 
 	</br>
 	<p id="stats"></p>
-	</br> </br>
+	</br>
 
 	<!-- RAYON -->
 		<p>Tracer un rayon autour de ma position : </br> (pour effacer, recharger la page)</p>
@@ -69,7 +66,7 @@
 			function success(pos) {
 				
 				var crd = pos.coords;
-				var map = L.map('map').setView([crd.latitude, crd.longitude], 10);
+				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
 				
 				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
 					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
@@ -112,28 +109,31 @@
 				oReq.open("GET", url);
 				oReq.send();
 
-//var date = new Date(pos.timestamp);
 
 // Récupération des données de départ et arrivée
 				stop.disabled = true;
+				var altitudeMax;
+				var altitudeMin;
 				var distanceTot;
 				let infoStart; 
 				let infoStop;
+				var A;
 
 				start.addEventListener("click",function(){
 					stop.disabled = false;
 					start.disabled = true;
-					console.log("start" + pos.coords.latitude);
-					startInfo.innerHTML = "DEPART : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
 					
 					distanceTot = 0;
 					infoStart = pos;
 
-					console.log(pos);
-					var A = infoStart.coords;
+					A = infoStart.coords;
+					altitudeMin = A.altitude;
+					altitudeMax = A.altitude;
 
 					setInterval(function(){
 						var B = pos.coords;
+	
+						
 	// On affiche le petit trajet parcouru en fonction du temps défini
 						var step = L.polygon([
 							[A.latitude, A.longitude], //point précédent
@@ -145,22 +145,24 @@
 							fillOpacity: 0.5,
 						}).addTo(map);
 
-	// On met à jour la distance totale en km
+
+	// On met à jour la distance totale en km et les dénivelés
 						distanceTot += Math.round(findDistance(A,B)/1000);
+						if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+						if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+
 
 	// On met les données du nouveau point sur l'ancien pour le calcul suivant
 						A = B;
 
-					}, 30000); // 1000 = toutes les secondes
+					}, 30000); // toutes les 30 secondes
 
 				});
 				stop.addEventListener("click",function(){
 					stop.disabled = true;
 					start.disabled = false;
-					console.log("stop");
-					stopInfo.innerHTML = "ARRIVEE : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
 
-					let infoStop = pos;
+					infoStop = pos;
 					//
 					var B = pos.coords;
 					var step = L.polygon([
@@ -173,7 +175,7 @@
 						fillOpacity: 0.5,
 					}).addTo(map);
 					distanceTot += Math.round(findDistance(A,B)/1000);
-					stats.innerHTML = "distance totale en km : " + distanceTot;
+					stats.innerHTML = "STATISTIQUE pour "+Date(pos.timestamp)+"</br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
 				});
 
 				function findDistance(A,B) {
