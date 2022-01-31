@@ -2,17 +2,20 @@
 <html>
 	<head>
 		<title>App Mymy</title>
-		<meta charset="utf-8"/>
-	
+		<meta charset="utf-8"/>	
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
 		crossorigin=""/> <!-- leaflet-step1 -->
-
 	</head>
 	<body>
+
 	<!-- RANDO -->
-	<button id="start">Démarrer</button>
-	<button id="stop">Arrêter</button>
+	<button id="start">Démarrer</button> 
+	<p id="startInfo"></p>
+	<p id="stopInfo"></p>
+	<button id="stop">Arrêter</button> 
+	</br>
+	<p id="stats"></p>
 	</br> </br>
 
 	<!-- RAYON -->
@@ -44,45 +47,11 @@
 		
 			navigator.geolocation.getCurrentPosition(success, error); 
 
-			let start = document.getElementById('start')
+			let start = document.getElementById('start');
+			let startInfo = document.getElementById('startInfo');
 			let stop = document.getElementById('stop');
-			//var date = new Date(pos.timestamp); 
-
-// 			var NiceMarseille = L.polygon([
-// 			[43.7101728, 7.2619532], //Nice
-// 			[43.299999, 5.4] //Marseille
-// 		],
-// 		{
-// 			color: 'blue',
-// 			fillColor: '#03f',
-// 			fillOpacity: 0.5,
-// 		}).addTo(map);
-// 		NiceMarseille.bindPopup("Distance Nice ("+coordN+") - Marseille ("+coordM+") : " + Math.round(findDistance()/1000) + "km");
-
-
-// // calculer la distance entre Marseille et Nice et l'afficher dans la popup
-
-// function findDistance() {
-//    var R = 6371e3; // R is earth’s radius
-//    var lat1 = 43.7101728; // lat Nice
-//    var lat2 = 43.299999;         // lat Marseille
-//    var lon1 = 7.2619532; // lon Nice
-//    var lon2 = 5.4;         // lon Marseille
-//    var lat1radians = toRadians(lat1);
-//    var lat2radians = toRadians(lat2);
-
-//    var latRadians = toRadians(lat2-lat1);
-//    var lonRadians = toRadians(lon2-lon1);
-
-//    var a = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
-//         Math.cos(lat1radians) * Math.cos(lat2radians) *
-//         Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
-//    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-//    var d = R * c;
-
-//    return d;
-// }
+			let stopInfo = document.getElementById('stopInfo');
+			let stats = document.getElementById('stats');
 
 			let rayon = document.getElementById('validsaisie')
 			let saisie = document.getElementById('saisierayon');
@@ -95,21 +64,19 @@
 
 			function success(pos) {
 				
-				var infoStart;
-				var infoStop;
 				var crd = pos.coords;
-				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
-
-				console.log("start : " + infoStart + "  / stop : "+ infoStop);
-				console.log(crd.altitude);
+				var map = L.map('map').setView([crd.latitude, crd.longitude], 10);
 				
 				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
 					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
 				}).addTo(map);
-//Affichage position
+
+
+// Affichage position en temps réel
 				L.marker([crd.latitude, crd.longitude]).addTo(map)
 					.bindPopup('vous êtes ici')
 					.openPopup();
+
 
 // Affichage du rayon
 				rayon.addEventListener("click", function(){
@@ -120,6 +87,8 @@
 					radius: saisie.value*1000
 				}).addTo(map);})
 
+
+// Affichage des contours de la commune sur la carte et des infos dans le formumaire 
 				var url1 = "https://geo.api.gouv.fr/departements/06/communes?fields=nom,code,codesPostaux,codeDepartement,codeRegion,population&format=geojson&geometry=centre";
 				var url = "https://geo.api.gouv.fr/communes?lat="+crd.latitude+"&lon="+crd.longitude+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
 
@@ -136,6 +105,98 @@
 				oReq.addEventListener("load", reqListener);
 				oReq.open("GET", url);
 				oReq.send();
+
+//var date = new Date(pos.timestamp);
+
+// Récupération des données de départ et arrivée
+				stop.disabled = true;
+				var distanceTot;
+				let infoStart; 
+				let infoStop;
+
+				start.addEventListener("click",function(){
+					stop.disabled = false;
+					start.disabled = true;
+					console.log("start" + pos.coords.latitude);
+					startInfo.innerHTML = "DEPART : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
+					
+					distanceTot = 0;
+					infoStart = pos;
+
+					console.log(pos);
+					var A = infoStart.coords;
+
+					setInterval(function(){
+						var B = pos.coords;
+	// On affiche le petit trajet parcouru en fonction du temps défini
+						var step = L.polygon([
+							[A.latitude, A.longitude], //point précédent
+							[B.latitude, B.longitude] //dernier point
+						],
+						{
+							color: 'red',
+							fillColor: '#03f',
+							fillOpacity: 0.5,
+						}).addTo(map);
+
+	// On met à jour la distance totale en km
+						distanceTot += Math.round(findDistance(A,B)/1000);
+
+	// On met les données du nouveau point sur l'ancien pour le calcul suivant
+						A = B;
+
+					}, 30000); // 1000 = toutes les secondes
+
+				});
+				stop.addEventListener("click",function(){
+					stop.disabled = true;
+					start.disabled = false;
+					console.log("stop");
+					stopInfo.innerHTML = "ARRIVEE : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
+
+					let infoStop = pos;
+					//
+					var B = pos.coords;
+					var step = L.polygon([
+						[A.latitude, A.longitude], //point précédent
+						[B.latitude, B.longitude] //dernier point
+					],
+					{
+						color: 'red',
+						fillColor: '#03f',
+						fillOpacity: 0.5,
+					}).addTo(map);
+					distanceTot += Math.round(findDistance(A,B)/1000);
+					stats.innerHTML = "distance totale en km : " + distanceTot;
+				});
+
+				function findDistance(A,B) {
+					var R = 6371e3; // R is earth’s radius
+
+					var latA = A.latitude;
+					var latB = B.latitude;
+					var lonA = A.longitude;
+					var lonB = B.longitude;
+
+					var latAradians = (latA)*Math.PI/180;
+					var latBradians = (latB)*Math.PI/180;
+					var latRadians = (latB-latA)*Math.PI/180;
+					var lonRadians = (lonB-lonA)*Math.PI/180;
+					// var latAradians = toRadians(latA);
+					// var latBradians = toRadians(latB);
+					// var latRadians = toRadians(latB-latA);
+					// var lonRadians = toRadians(lonB-lonA);
+
+					var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+							Math.cos(latAradians) * Math.cos(latBradians) *
+							Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+					var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+
+					var distance = R * y;
+
+					return distance;
+				}
+				
 
 				let carte = document.getElementById('map');		
 				carte.append(map);
