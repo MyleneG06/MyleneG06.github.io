@@ -71,29 +71,51 @@
 				function ( gltf ) {
 					scene.add( gltf.scene );
 					me=gltf.scene ;
-				me.position.x = cartesianPos.x;
-				me.position.y = cartesianPos.y;
-				me.position.z = cartesianPos.z;
-				// réduire la taille du canard
-			},
+					me.position.x = cartesianPos.x;
+					me.position.y = cartesianPos.y;
+					me.position.z = cartesianPos.z;
+					me.scale.set(0.05,0.05,0.05);// réduire la taille du canard
+				},
 				function ( xhr ) {console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );},
 				function ( error ) {console.log( 'An error happened' );}
 			);
 		});
 
 		// exemple drapeau Espagne 
-		navigator.geolocation.getCurrentPosition(pos => {
-			const cartesianPos = convert(40.4167754, -3.7037902)
-			// Point avec texture drapeau espagnol
-			const geometryP = new THREE.SphereGeometry(0.01,32,32);
-			const textureP = new THREE.TextureLoader().load( 'espagne.jpg' );		
-			const materialP = new THREE.MeshBasicMaterial( { map: textureP } );
-			const espagne = new THREE.Mesh( geometryP, materialP );
-			espagne.position.x = cartesianPos.x;
-        	espagne.position.y = cartesianPos.y;
-        	espagne.position.z = cartesianPos.z;
-			scene.add( espagne ) ;
-		});
+		const cartesianPos = convert(40.4167754, -3.7037902)
+		const geometryP = new THREE.SphereGeometry(0.01,32,32);
+		const textureP = new THREE.TextureLoader().load( 'espagne.jpg' );		
+		const materialP = new THREE.MeshBasicMaterial( { map: textureP } );
+		const espagne = new THREE.Mesh( geometryP, materialP );
+		espagne.position.x = cartesianPos.x;
+		espagne.position.y = cartesianPos.y;
+		espagne.position.z = cartesianPos.z;
+		scene.add( espagne ) ;
+
+		// Industrialisation via rest API 
+		var url = "https://restcountries.com/v3.1/all";
+
+		function reqListener () {
+			//console.log(JSON.parse(this.response)[1].flags.png);
+			
+			for (let pays of JSON.parse(this.response)) {
+				const cartesianPos = convert(pays.latlng[0], pays.latlng[1]) //coordonnées
+				const geometry = new THREE.SphereGeometry(0.01,32,32);
+				const texture = new THREE.TextureLoader().load(pays.flags.png); // drapeau		
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+				const country = new THREE.Mesh( geometry, material );
+				country.position.x = cartesianPos.x;
+				country.position.y = cartesianPos.y;
+				country.position.z = cartesianPos.z;
+				scene.add( country ) ;
+			}
+			//L.geoJson(JSON.parse(this.response)).addTo(map);
+		}
+		var oReq = new XMLHttpRequest();
+		oReq.addEventListener("load", reqListener);
+		oReq.open("GET", url);
+		oReq.send();
+
 
 		function convert(lat, lon) {
 			lon = -lon * Math.PI / 180.0;
