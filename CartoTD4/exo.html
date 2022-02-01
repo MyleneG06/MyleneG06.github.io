@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mylene exo TD4</title>
+	<meta charset="utf-8"/>
+</head>
+<body>
+	<h3>TD4</h3>
+	<p>exo</p><br/>
+
+
+	<!-- <div id="app"></div>
+	<script src="three.js"></script>
+	<script src="orbitControls.js"></script>
+	<script>
+
+		//scene
+		const scene = new THREE.Scene();
+
+		//light
+		light = new THREE.DirectionalLight( 0xb4e7f2, 1.5 );
+		light.position.set( -10, 2, 5 );
+		light.position.x = 1;
+		light.target.position = 160;
+		scene.add(light);
+		// ambiance = new THREE.AmbientLight( 0x444444 );
+		// scene.add(ambiance);
+
+		//texture montagne
+		var loader = new THREE.TextureLoader();
+		var texture = loader.load("montagne.jpg");
+		const mattexture = new THREE.MeshBasicMaterial( { map: texture} );
+
+		//cube
+		const geocube = new THREE.BoxGeometry();
+		const matcube = new THREE.MeshNormalMaterial();
+		const cube = new THREE.Mesh( geocube, matcube );
+		scene.add( cube );
+
+		//sphere
+		const geoglobe = new THREE.SphereGeometry(1,25,16);
+		const matglobe = new THREE.MeshBasicMaterial( { color: "#FF9900"} );
+		const globe = new THREE.Mesh( geoglobe, mattexture );
+		globe.position.x = -10;
+		globe.position.y = -10;
+		scene.add( globe );
+
+		//camera
+		const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+		camera.position.z = 20;
+		//controls = new THREE.OrbitControls(camera);	
+
+		//renderer
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+
+		//animation
+		function animate() {
+			requestAnimationFrame( animate );
+			cube.rotation.x += Math.PI/200;
+			cube.rotation.y += Math.PI/400;
+			globe.position.x += 0.1;
+			globe.position.y += 0.2;
+			//controls.update();
+			renderer.render( scene, camera );
+		};
+		animate();
+
+	</script> -->
+</body>
+</html>
