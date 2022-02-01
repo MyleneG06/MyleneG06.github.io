@@ -60,21 +60,29 @@
 		earth.position.set(0,0,0);
 		scene.add( earth ) ;
 
+		
 		//récupération de la position
-		navigator.geolocation.getCurrentPosition(success, error);
-		function success(pos) {
-				console.log("success");
-				var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 12);
-				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
-				}).addTo(map);
-				var msg = 'vous êtes ici';// Affichage position
-				L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map)
-					.bindPopup(msg)
-					.openPopup();
-			}
-			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+		navigator.geolocation.getCurrentPosition(pos => {
+			const cartesianPos = convert(pos.coords.latitude, pos.coords.longitude)
+			// Point de position
+			const geometry = new THREE.SphereGeometry(0.01,32,32);
+			const texture = new THREE.MeshBasicMaterial( { color: "#FF9900"} );
+			const moi = new THREE.Mesh( geometry, texture );
+			moi.position.x = cartesianPos.x;
+        	moi.position.y = cartesianPos.y;
+        	moi.position.z = cartesianPos.z;
+			scene.add( moi ) ;
+		});
 
+			function convert(lat, lon) {
+				lon = -lon * Math.PI / 180.0;
+				lat = lat * Math.PI / 180.0;
+				return new THREE.Vector3(
+					Math.cos(lat) * Math.cos(lon),
+					Math.sin(lat),
+					Math.cos(lat) * Math.sin(lon)
+				);
+			}
 		//Affichage de la position sur la Terre
 		
 
