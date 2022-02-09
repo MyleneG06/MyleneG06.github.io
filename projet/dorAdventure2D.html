@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>App Mymy</title>
+		<meta charset="utf-8"/>	
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/> <!-- leaflet-step1 -->
+	</head>
+	<body>
+		<!-- INFOS COORDONNEES -->
+        <label>Latitude : </label><span id="latitude"></span>        </br>
+        <label>Longitude : </label><span id="longitude"></span>      </br>        
+        <label>Altitude : </label><span id="altitude"></span>      </br></br>
+
+        <!-- RANDOS -->
+	<button id="start">Démarrer</button><p id="startInfo"></p>	</br>
+	<button id="stop">Arrêter</button> <p id="stopInfo"></p>	</br>
+	<p id="stats"></p>	</br>
+	<!-- INFOS
+		<label>Région : </label><text id="region"></text>	</br>
+		<label>Département : </label><text id="departement"></text>	</br>
+		<label>Commune : </label><text id="commune"></text>	</br>
+		<label>Population : </label><text id="population"></text>	</br>
+		<label>Surface : </label><text id="surface"></text>	</br></br>
+ -->
+	<!-- CARTE -->
+		<div id="map"></div>
+		<style>#map { height: 100vh; }</style>		
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+	<!-- 
+        let sensor = new Magnetometer();
+sensor.start();
+
+sensor.onreading = () => {
+    console.log("Magnetic field along the X-axis " + sensor.x);
+    console.log("Magnetic field along the Y-axis " + sensor.y);
+    console.log("Magnetic field along the Z-axis " + sensor.z);
+};
+
+sensor.onerror = event => console.log(event.error.name, event.error.message);
+
+
+         -->
+		<script>
+		
+			//navigator.geolocation.watchPosition(success, error);
+			navigator.geolocation.getCurrentPosition(success, error);
+			//var surv = 
+
+			var latitude = document.getElementById('latitude');
+			var longitude = document.getElementById('longitude');
+			var altitude = document.getElementById('altitude');
+			//let position = document.getElementById('position');
+
+			let start = document.getElementById('start');
+			let startInfo = document.getElementById('startInfo');
+			let stop = document.getElementById('stop');
+			let stopInfo = document.getElementById('stopInfo');
+			let stats = document.getElementById('stats');
+
+			function success(pos) {
+		// Centrage de la carte autour des coordonnées		
+				console.log("success");
+				var crd = pos.coords;
+				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
+				
+				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
+				}).addTo(map);
+
+
+// Affichage position
+			var moi = L.polygon([[crd.latitude, crd.longitude]],
+						{
+							color: 'red',
+							fillColor: '#03f',
+							fillOpacity: 0.5,
+						}).addTo(map);
+				// var msg = 'vous êtes ici';
+				// if(crd.altitude != null) {msg = 'vous êtes ici à une altitude de ' + crd.altitude + 'm.'}
+				// L.marker([crd.latitude, crd.longitude]).addTo(map)
+				// 	.bindPopup(msg)
+				// 	.openPopup();
+				
+				//position.innerHTML = "POSITION AU CHARGEMENT : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
+
+				latitude.innerHTML = crd.latitude;
+                longitude.innerHTML = crd.longitude;
+                if(crd1.altitude != null) {altitude.innerHTML = crd.altitude;}
+
+
+// Récupération des données de départ et arrivée
+				stop.disabled = true;
+				var altitudeMax;
+				var altitudeMin;
+				var distanceTot;
+				var A;
+
+				start.addEventListener("click",function(){
+
+					stop.disabled = false;
+					start.disabled = true;
+
+					startInfo.innerHTML = "Horaire de départ : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+					//position.innerHTML = "";
+					
+					distanceTot = 0;
+
+					A = pos.coords;
+					console.log("A : "  + A);
+					altitudeMin = A.altitude;
+					console.log("altitude min : "  + altitudeMin);
+					altitudeMax = A.altitude;
+					console.log("altitude max : "  + altitudeMax);
+
+					setInterval(function(){
+						var B = pos.coords;
+	
+// On affiche le petit trajet parcouru en fonction du temps défini
+						var step = L.polygon([
+							[A.latitude, A.longitude], //point précédent
+							[B.latitude, B.longitude] //dernier point
+						],
+						{
+							color: 'red',
+							fillColor: '#03f',
+							fillOpacity: 0.5,
+						}).addTo(map);
+
+
+	// On met à jour la distance totale en km et les dénivelés
+						distanceTot += Math.round(findDistance(A,B)/1000);
+						if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+						if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+
+
+	// On met les données du nouveau point sur l'ancien pour le calcul suivant
+						A = B;
+
+					}, 30000); // toutes les 30 secondes
+
+				});
+				stop.addEventListener("click",function(){
+					stop.disabled = true;
+					start.disabled = false;
+
+					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+
+					var B = pos.coords;
+					var step = L.polygon([
+						[A.latitude, A.longitude], //point précédent
+						[B.latitude, B.longitude] //dernier point
+					],
+					{
+						color: 'red',
+						fillColor: '#03f',
+						fillOpacity: 0.5,
+					}).addTo(map);
+
+					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+					distanceTot += Math.round(findDistance(A,B)/1000);
+
+					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+
+					//navigator.geolocation.clearWatch(surv);
+				});
+
+				function findDistance(A,B) {
+					var R = 6371e3; // R is earth’s radius
+
+					var latA = A.latitude;
+					var latB = B.latitude;
+					var lonA = A.longitude;
+					var lonB = B.longitude;
+
+					var latAradians = (latA)*Math.PI/180;
+					var latBradians = (latB)*Math.PI/180;
+					var latRadians = (latB-latA)*Math.PI/180;
+					var lonRadians = (lonB-lonA)*Math.PI/180;
+					// var latAradians = toRadians(latA);
+					// var latBradians = toRadians(latB);
+					// var latRadians = toRadians(latB-latA);
+					// var lonRadians = toRadians(lonB-lonA);
+
+					var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+							Math.cos(latAradians) * Math.cos(latBradians) *
+							Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+					var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+
+					var distance = R * y;
+
+					return distance;
+				}
+				
+
+				let carte = document.getElementById('map');		
+				carte.append(map);
+			}
+
+
+			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+		
+
+			
+		</script>
+	</body>
+</html>

@@ -9,20 +9,20 @@
 		crossorigin=""/> <!-- leaflet-step1 -->
 	</head>
 	<body>         
-    <!-- INFOS COORDONNEES -->
+<!-- INFOS COORDONNEES -->
         <label>Latitude : </label><span id="latitude"></span>        </br>
         <label>Longitude : </label><span id="longitude"></span>      </br>        
         <label>Altitude : </label><span id="altitude"></span>      </br></br>
-    <!-- RAYON -->
+<!-- RAYON -->
         <input id="saisieRayon" placeholder="rayon en km" />
         <button id="validRayon">Valider</button></br> </br>
-    <!-- INFOS API -->
+<!-- INFOS API -->
         <label>Région : </label><text id="region"></text>        </br>
         <label>Département : </label><text id="departement"></text>        </br>
         <label>Commune : </label><text id="commune"></text>        </br>
         <label>Population : </label><text id="population"></text>        </br>
         <label>Surface : </label><text id="surface"></text>        </br></br>
-    <!-- CARTE -->
+<!-- CARTE -->
         <div id="map"></div>
         <style>#map { height: 100vh; }</style>		
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -35,14 +35,14 @@
             navigator.geolocation.getCurrentPosition(success, error);
 
             function success(pos) {				
-        // Centrage de la carte autour des coordonnées
+// Centrage de la carte autour des coordonnées
                 var crd1 = pos.coords;
                 var map = L.map('map').setView([crd1.latitude, crd1.longitude], 10);          
                 L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-        // Affichage de la position (avec altitude si accessible)
+// Affichage de la position (avec altitude si accessible)
                 var msg = 'vous êtes ici';
                 document.getElementById('latitude').innerHTML = crd1.latitude;
                 document.getElementById('longitude').innerHTML = crd1.longitude;
@@ -54,7 +54,7 @@
                     .bindPopup(msg)
                     .openPopup();
 
-        // Affichage du rayon saisi
+// Affichage du rayon saisi
                 document.getElementById('validRayon').addEventListener("click", function(){
                     var circle = L.circle([document.getElementById('latitude').innerText, document.getElementById('longitude').innerText], {
                         color: 'green',
@@ -64,7 +64,7 @@
                     }).addTo(map);
                 });
 
-        // contours de la commune sur la carte et des infos de l'API 
+// Contours de la commune sur la carte et des infos de l'API 
                 var url = "https://geo.api.gouv.fr/communes?lat="+document.getElementById('latitude').innerText+"&lon="+document.getElementById('longitude').innerText+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
 
                 function reqListener () {
@@ -80,8 +80,7 @@
                 oReq.open("GET", url);
                 oReq.send();       
 
-
-        // position choisie    
+// Position choisie    
                 map.on('click', function(e) {
                     var latitude2 = e.latlng.lat;
                     var longitude2 = e.latlng.lng
@@ -107,7 +106,7 @@
                 oReq.open("GET", url2);
                 oReq.send();  
                 
-                // On affiche la distance entre les deux points
+        // On affiche la distance entre les deux points
                 var msgd = "distance";
                 var distance = L.polygon([
                     [crd1.latitude, crd1.longitude], //position géolocalisée
@@ -123,7 +122,7 @@
 
                 });
 
-        // Affichage de la carte
+// Affichage de la carte
                 let carte = document.getElementById('map');		
                 carte.append(map);
 
