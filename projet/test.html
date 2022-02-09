@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Compass</title>
+    <style>
+        html,body,#map { width:100%; height:100%; margin:0; }
+        #map {position: absolute; z-index: 5;}
+    </style>
+
+  </head>
+  
+  <body>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <div  id = "map"> </div>
+    <script>
+        var rota_;
+        var vectorSource = new ol.source.Vector(),
+        url_osrm_nearest = '//router.project-osrm.org/nearest/v1/driving/',
+            url_osrm_route = '//router.project-osrm.org/route/v1/driving/',
+            icon_url = '//cdn.rawgit.com/openlayers/ol3/master/examples/data/icon.png',
+            vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+            }),
+            styles = {
+            route: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                width: 6, color: [40, 40, 40, 0.8]
+                })
+            }),
+            icon: new ol.style.Style({
+                image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                src: icon_url
+                })
+            })
+            };
+        const view = new ol.View({
+        center: [10,10],
+        zoom: 7,
+        projection: 'EPSG:4326'
+        });
+
+        const map = new ol.Map({
+        layers: [
+            new ol.layer.Tile({
+            source: new ol.source.OSM(),
+            }),
+            vectorLayer
+        ],
+        target: 'map',
+        view: view,
+        });
+        const geolocation = new ol.Geolocation({
+        // enableHighAccuracy must be set to true to have the heading value.
+        trackingOptions: {
+            enableHighAccuracy: true,
+        },
+        projection: view.getProjection(),
+        });
+        window.addEventListener("deviceorientation", handleOrientation, true);
+        geolocation.setTracking(1);
+        const iconCar = new ol.Feature({
+        name: 'Null Island',
+        population: 4000,
+        rainfall: 500,
+        size: [5, 5],
+        });
+        const iconStyle = new ol.style.Style({
+        image: new ol.style.Icon({
+            anchor: [0,5, 1],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            src: 'https://banner2.cleanpng.com/20180426/wye/kisspng-gps-navigation-systems-computer-icons-arrow-transparent-triangle-5ae25abfa4fff1.7727401715247838076759.jpg',
+            rotateWithView: "false",
+            scale: 0.1,
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+        })
+        });
+        iconCar.setStyle(iconStyle);
+        new ol.layer.Vector({
+        map: map,
+        source: new ol.source.Vector({
+            features: [iconCar],
+        }),
+        });
+        function compassHeading(alpha, beta, gamma) {
+            var alphaRad = -alpha * (Math.PI / 180);
+            var betaRad = beta * (Math.PI / 180);
+            var gammaRad = gamma * (Math.PI / 180);
+            betaRad = 1.5707963268;
+            var cA = Math.cos(alphaRad);
+            var sA = Math.sin(alphaRad);
+            var cB = Math.cos(betaRad);
+            var sB = Math.sin(betaRad);
+            var cG = Math.cos(gammaRad);
+            var sG = Math.sin(gammaRad);
+
+            var rA = - cA * sG - sA * sB * cG;
+            var rB = - sA * sG + cA * sB * cG;
+            var rC = - cB * cG;
+
+            var compassHeading = Math.atan(rA / rB);
+
+            if(rB < 0) {
+                compassHeading += Math.PI;
+            }else if(rA < 0) {
+                compassHeading += 2 * Math.PI;
+            }
+            return compassHeading;
+
+            }
+        function locate()
+        {
+        const coordinates = geolocation.getPosition();
+        iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+        map.getView().fit(iconCar.getGeometry(),{maxZoom: 16});
+        }
+
+        function handleOrientation(event) {
+        absolute = event.absolute;
+        alpha    = event.alpha;
+        beta     = event.beta;
+        gamma    = event.gamma;
+        if(isNaN(rota_))
+        {
+            rota_ = compassHeading(alpha, beta, gamma);
+            view.setCenter([boylam,enlem]);
+            //iconStyle.getImage().setRotateWithView(1);
+            iconStyle.getImage().setRotation(rota_);
+        }
+        else
+        {
+            eski_yon = rota_;
+            rota_ = compassHeading(alpha, beta, gamma);   
+        }
+        if(rota_ != null && !isNaN(rota_))
+        {
+            iconStyle.getImage().setRotateWithView(0);
+            map.getView().setRotation(rota_);
+        }
+        }
+    </script>
+  </body>
+</html>
