@@ -37,6 +37,8 @@
 			let stopInfo = document.getElementById('stopInfo');
 			let stats = document.getElementById('stats');
 
+			window.addEventListener("deviceorientation", handleOrientation, true);
+
 			navigator.geolocation.watchPosition(function(pos) {
 // Centrage de la carte autour des coordonnées		
 				var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 14);
@@ -164,31 +166,88 @@
 			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
 
 			function findDistance(A,B) {
-					var R = 6371e3; // R is earth’s radius
+				var R = 6371e3; // R is earth’s radius
 
-					var latA = A.latitude;
-					var latB = B.latitude;
-					var lonA = A.longitude;
-					var lonB = B.longitude;
+				var latA = A.latitude;
+				var latB = B.latitude;
+				var lonA = A.longitude;
+				var lonB = B.longitude;
 
-					var latAradians = (latA)*Math.PI/180;
-					var latBradians = (latB)*Math.PI/180;
-					var latRadians = (latB-latA)*Math.PI/180;
-					var lonRadians = (lonB-lonA)*Math.PI/180;
-					// var latAradians = toRadians(latA);
-					// var latBradians = toRadians(latB);
-					// var latRadians = toRadians(latB-latA);
-					// var lonRadians = toRadians(lonB-lonA);
+				var latAradians = (latA)*Math.PI/180;
+				var latBradians = (latB)*Math.PI/180;
+				var latRadians = (latB-latA)*Math.PI/180;
+				var lonRadians = (lonB-lonA)*Math.PI/180;
+				// var latAradians = toRadians(latA);
+				// var latBradians = toRadians(latB);
+				// var latRadians = toRadians(latB-latA);
+				// var lonRadians = toRadians(lonB-lonA);
 
-					var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
-							Math.cos(latAradians) * Math.cos(latBradians) *
-							Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
-					var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+				var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+						Math.cos(latAradians) * Math.cos(latBradians) *
+						Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+				var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
 
-					var distance = R * y;
+				var distance = R * y;
 
-					return distance;
-				}
+				return distance;
+			}
+
+			function compassHeading(alpha, beta, gamma) {
+            var alphaRad = -alpha * (Math.PI / 180);
+            var betaRad = beta * (Math.PI / 180);
+            var gammaRad = gamma * (Math.PI / 180);
+            betaRad = 1.5707963268;
+            var cA = Math.cos(alphaRad);
+            var sA = Math.sin(alphaRad);
+            var cB = Math.cos(betaRad);
+            var sB = Math.sin(betaRad);
+            var cG = Math.cos(gammaRad);
+            var sG = Math.sin(gammaRad);
+
+            var rA = - cA * sG - sA * sB * cG;
+            var rB = - sA * sG + cA * sB * cG;
+            var rC = - cB * cG;
+
+            var compassHeading = Math.atan(rA / rB);
+
+            if(rB < 0) {
+                compassHeading += Math.PI;
+            }else if(rA < 0) {
+                compassHeading += 2 * Math.PI;
+            }
+            return compassHeading;
+
+            }
+        function locate()
+        {
+        const coordinates = geolocation.getPosition();
+        iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+        map.getView().fit(iconCar.getGeometry(),{maxZoom: 16});
+        }
+
+        function handleOrientation(event) {
+        absolute = event.absolute;
+        alpha    = event.alpha;
+        beta     = event.beta;
+        gamma    = event.gamma;
+        if(isNaN(rota_))
+        {
+            rota_ = compassHeading(alpha, beta, gamma);
+            view.setCenter([boylam,enlem]);
+            //iconStyle.getImage().setRotateWithView(1);
+            iconStyle.getImage().setRotation(rota_);
+        }
+        else
+        {
+            eski_yon = rota_;
+            rota_ = compassHeading(alpha, beta, gamma);   
+        }
+        if(rota_ != null && !isNaN(rota_))
+        {
+            iconStyle.getImage().setRotateWithView(0);
+            map.getView().setRotation(rota_);
+        }
+        }
 		
 
 			
