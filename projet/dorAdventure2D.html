@@ -37,6 +37,7 @@
 			let stopInfo = document.getElementById('stopInfo');
 			let stats = document.getElementById('stats');
 
+			var rota_;
 			window.addEventListener("deviceorientation", handleOrientation, true);
 
 			navigator.geolocation.watchPosition(function(pos) {
@@ -139,13 +140,15 @@
 				let carte = document.getElementById('map');		
 				carte.append(map);
 
-			}, error, {timeout:10000});
+			});
+			//}, error, {timeout:10000});
 
-      if(window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function(orientation) {
-          console.log("Alpha : " + orientation.alpha) ;
-        });
-      }
+    //   if(window.DeviceOrientationEvent) {
+	// 	window.addEventListener("deviceorientation", handleOrientation, true);
+    //     // window.addEventListener('deviceorientation', function(orientation) {
+    //     //   console.log("Alpha : " + orientation.alpha) ;
+    //     //});
+    //  }
 
 
 			//var watchID = navigator.geolocation.watchPosition(success, error, {timeout:10000});
