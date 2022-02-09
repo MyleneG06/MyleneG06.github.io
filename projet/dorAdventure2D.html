@@ -46,8 +46,8 @@ sensor.onerror = event => console.log(event.error.name, event.error.message);
          -->
 		<script>
 		
-			//navigator.geolocation.watchPosition(success, error);
-			navigator.geolocation.getCurrentPosition(success, error);
+			navigator.geolocation.watchPosition(success, error);
+			//navigator.geolocation.getCurrentPosition(success, error);
 			//var surv = 
 
 			var latitude = document.getElementById('latitude');
@@ -63,9 +63,7 @@ sensor.onerror = event => console.log(event.error.name, event.error.message);
 
 			function success(pos) {
 		// Centrage de la carte autour des coordonnées		
-				console.log("success");
-				var crd = pos.coords;
-				var map = L.map('map').setView([crd.latitude, crd.longitude], 12);
+				var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 14);
 				
 				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
 					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
@@ -73,12 +71,13 @@ sensor.onerror = event => console.log(event.error.name, event.error.message);
 
 
 // Affichage position
-			var moi = L.polygon([[crd.latitude, crd.longitude]],
-						{
-							color: 'red',
-							fillColor: '#03f',
-							fillOpacity: 0.5,
-						}).addTo(map);
+				var moi = L.circle([pos.coords.latitude, pos.coords.longitude], {
+					color: 'blue',
+					fillColor: '#00f',
+					fillOpacity: 0.5,
+					radius: 10
+				}).addTo(map);
+				console.log("POSITION AU CHARGEMENT : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp));
 				// var msg = 'vous êtes ici';
 				// if(crd.altitude != null) {msg = 'vous êtes ici à une altitude de ' + crd.altitude + 'm.'}
 				// L.marker([crd.latitude, crd.longitude]).addTo(map)
@@ -87,89 +86,98 @@ sensor.onerror = event => console.log(event.error.name, event.error.message);
 				
 				//position.innerHTML = "POSITION AU CHARGEMENT : </br> Coordonnées : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> Horaire : " + Date(pos.timestamp);
 
-				latitude.innerHTML = crd.latitude;
-                longitude.innerHTML = crd.longitude;
-                if(crd1.altitude != null) {altitude.innerHTML = crd.altitude;}
+				latitude.innerHTML = pos.coords.latitude;
+                longitude.innerHTML = pos.coords.longitude;
+                if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
 
 
-// Récupération des données de départ et arrivée
-				stop.disabled = true;
-				var altitudeMax;
-				var altitudeMin;
-				var distanceTot;
-				var A;
+// // Récupération des données de départ et arrivée
+// 				stop.disabled = true;
+// 				var altitudeMax;
+// 				var altitudeMin;
+// 				var distanceTot;
+// 				var A;
 
-				start.addEventListener("click",function(){
+// 				start.addEventListener("click",function(){
 
-					stop.disabled = false;
-					start.disabled = true;
+// 					stop.disabled = false;
+// 					start.disabled = true;
 
-					startInfo.innerHTML = "Horaire de départ : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
-					//position.innerHTML = "";
+// 					startInfo.innerHTML = "Horaire de départ : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+// 					//position.innerHTML = "";
 					
-					distanceTot = 0;
+// 					distanceTot = 0;
 
-					A = pos.coords;
-					console.log("A : "  + A);
-					altitudeMin = A.altitude;
-					console.log("altitude min : "  + altitudeMin);
-					altitudeMax = A.altitude;
-					console.log("altitude max : "  + altitudeMax);
+// 					A = pos.coords;
+// 					console.log("A : "  + A);
+// 					altitudeMin = A.altitude;
+// 					console.log("altitude min : "  + altitudeMin);
+// 					altitudeMax = A.altitude;
+// 					console.log("altitude max : "  + altitudeMax);
 
-					setInterval(function(){
-						var B = pos.coords;
+// 					setInterval(function(){
+// 						var B = pos.coords;
 	
-// On affiche le petit trajet parcouru en fonction du temps défini
-						var step = L.polygon([
-							[A.latitude, A.longitude], //point précédent
-							[B.latitude, B.longitude] //dernier point
-						],
-						{
-							color: 'red',
-							fillColor: '#03f',
-							fillOpacity: 0.5,
-						}).addTo(map);
+// // On affiche le petit trajet parcouru en fonction du temps défini
+// 						var step = L.polygon([
+// 							[A.latitude, A.longitude], //point précédent
+// 							[B.latitude, B.longitude] //dernier point
+// 						],
+// 						{
+// 							color: 'red',
+// 							fillColor: '#03f',
+// 							fillOpacity: 0.5,
+// 						}).addTo(map);
 
 
-	// On met à jour la distance totale en km et les dénivelés
-						distanceTot += Math.round(findDistance(A,B)/1000);
-						if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-						if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// 	// On met à jour la distance totale en km et les dénivelés
+// 						distanceTot += Math.round(findDistance(A,B)/1000);
+// 						if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+// 						if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
 
 
-	// On met les données du nouveau point sur l'ancien pour le calcul suivant
-						A = B;
+// 	// On met les données du nouveau point sur l'ancien pour le calcul suivant
+// 						A = B;
 
-					}, 30000); // toutes les 30 secondes
+// 					}, 30000); // toutes les 30 secondes
 
-				});
-				stop.addEventListener("click",function(){
-					stop.disabled = true;
-					start.disabled = false;
+// 				});
+// 				stop.addEventListener("click",function(){
+// 					stop.disabled = true;
+// 					start.disabled = false;
 
-					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+// 					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
 
-					var B = pos.coords;
-					var step = L.polygon([
-						[A.latitude, A.longitude], //point précédent
-						[B.latitude, B.longitude] //dernier point
-					],
-					{
-						color: 'red',
-						fillColor: '#03f',
-						fillOpacity: 0.5,
-					}).addTo(map);
+// 					var B = pos.coords;
+// 					var step = L.polygon([
+// 						[A.latitude, A.longitude], //point précédent
+// 						[B.latitude, B.longitude] //dernier point
+// 					],
+// 					{
+// 						color: 'red',
+// 						fillColor: '#03f',
+// 						fillOpacity: 0.5,
+// 					}).addTo(map);
 
-					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-					distanceTot += Math.round(findDistance(A,B)/1000);
+// 					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+// 					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// 					distanceTot += Math.round(findDistance(A,B)/1000);
 
-					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+// 					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
 
 					//navigator.geolocation.clearWatch(surv);
-				});
+				// });
 
-				function findDistance(A,B) {
+				
+				
+
+				let carte = document.getElementById('map');		
+				carte.append(map);
+			}
+
+			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
+
+			function findDistance(A,B) {
 					var R = 6371e3; // R is earth’s radius
 
 					var latA = A.latitude;
@@ -195,14 +203,6 @@ sensor.onerror = event => console.log(event.error.name, event.error.message);
 
 					return distance;
 				}
-				
-
-				let carte = document.getElementById('map');		
-				carte.append(map);
-			}
-
-
-			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
 		
 
 			
