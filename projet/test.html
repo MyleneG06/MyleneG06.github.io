@@ -38,11 +38,80 @@
         navigator.geolocation.watchPosition(function(pos) {
             const coordinates = geolocation.getPosition();
             iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
-            if (map.getView() != null){map.getView().fit(iconCar.getGeometry(),{maxZoom: 16});}
+            if (map.getView() != null){map.getView().fit(iconCar.getGeometry(),{maxZoom: 20});}
             latitude.innerHTML = pos.coords.latitude;
             longitude.innerHTML = pos.coords.longitude;
             if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
             view.setCenter([pos.coords.longitude, pos.coords.latitude]);
+
+// Récupération des données de départ et arrivée
+stop.disabled = true;
+            var distanceTot;
+            var A;
+            //var altitudeMax;
+            //var altitudeMin;
+            
+            // start.addEventListener("click",function(){
+            //     stop.disabled = false;
+            //     start.disabled = true;
+            //     A = pos.coords;
+            //     //
+            //     console.log("A : "  + A);
+            //     startInfo.innerHTML = "Coordonnées de départ : " + A.altitude + "(m d'altitude) - " + A.latitude + "(lat) - " + A.longitude + "(lon)";
+            //     distanceTot = 0;
+            //     // altitudeMin = A.altitude;
+            //     // console.log("altitude min : "  + altitudeMin);
+            //     // altitudeMax = A.altitude;
+            //     // console.log("altitude max : "  + altitudeMax);
+
+// setInterval(function(){
+//     var B = pos.coords;
+// // On affiche le petit trajet parcouru en fonction du temps défini
+//         var step = L.polygon([
+//             [A.latitude, A.longitude], //point précédent
+//             [B.latitude, B.longitude] //dernier point
+//         ],
+//         {
+//             color: 'red',
+//             fillColor: '#03f',
+//             fillOpacity: 0.5,
+//         }).addTo(map);
+// // On met à jour la distance totale en km et les dénivelés
+//         distanceTot += Math.round(findDistance(A,B)/1000);
+//         if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+//         if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// // On met les données du nouveau point sur l'ancien pour le calcul suivant
+//         A = B;
+//     }, 30000); // toutes les 30 secondes
+			// });
+
+
+// 				stop.addEventListener("click",function(){
+// 					stop.disabled = true;
+// 					start.disabled = false;
+
+// 					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+
+// 					var B = pos.coords;
+// 					var step = L.polygon([
+// 						[A.latitude, A.longitude], //point précédent
+// 						[B.latitude, B.longitude] //dernier point
+// 					],
+// 					{
+// 						color: 'red',
+// 						fillColor: '#03f',
+// 						fillOpacity: 0.5,
+// 					}).addTo(map);
+
+// 					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+// 					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// 					distanceTot += Math.round(findDistance(A,B)/1000);
+
+// 					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+
+					//navigator.geolocation.clearWatch(surv);
+				// });
+            
         });
 
 //initialisation des variables et affichage de la carte
@@ -67,7 +136,7 @@
                     })
                 })
             };
-        const view = new ol.View({center: [10,10], zoom: 16, projection: 'EPSG:4326'});
+        const view = new ol.View({center: [10,10], zoom: 50, projection: 'EPSG:4326'});
         const map = new ol.Map({ layers: [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer], target: 'map', view: view,});
         const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
         geolocation.setTracking(1);
