@@ -67,7 +67,7 @@
                     })
                 })
             };
-        const view = new ol.View({center: [10,10], zoom: 7, projection: 'EPSG:4326'});
+        const view = new ol.View({center: [10,10], zoom: 16, projection: 'EPSG:4326'});
         const map = new ol.Map({ layers: [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer], target: 'map', view: view,});
         const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
         geolocation.setTracking(1);
@@ -123,16 +123,14 @@
             gamma    = event.gamma;
             if(isNaN(rota_)) {
                 rota_ = compassHeading(alpha, beta, gamma);
-                iconStyle.getImage().setRotateWithView(1);
-                //iconStyle.getImage().setRotation(rota_);
+                //iconStyle.getImage().setRotateWithView(1);
             }else{
                 eski_yon = rota_;
                 rota_ = compassHeading(alpha, beta, gamma);   
             }
             if(rota_ != null && !isNaN(rota_)) {
-                iconStyle.getImage().setRotateWithView(0);
+                //iconStyle.getImage().setRotateWithView(0);
                 map.getView().setRotation(rota_);
-                //view.setCenter([longitude.innerHTML,latitude.innerHTML]);
             }
             view.setCenter([longitude.innerHTML,latitude.innerHTML]);
         }
