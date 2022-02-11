@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
+    <label>Info : </label><span id="accuracy"></span>  
 <!-- INFOS COORDONNEES -->
     <label>Latitude : </label><span id="latitude"></span>        </br>
     <label>Longitude : </label><span id="longitude"></span>      </br>        
@@ -37,6 +38,13 @@
 // Centrage de la carte autour des coordonnées représentées par l'icône et précisées dans le formulaire
         navigator.geolocation.watchPosition(function(pos) {
             const coordinates = geolocation.getPosition();
+            // var moi = L.circle([pos.coords.latitude, pos.coords.longitude], {
+			// 		color: 'blue',
+			// 		fillColor: '#00f',
+			// 		fillOpacity: 0.5,
+			// 		radius: pos.coords.accuracy
+			// 	}).addTo(map);
+                document.getElementById('accuracy').innerHTML = pos.coords.accuracy;
             iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
             if (map.getView() != null){map.getView().fit(iconCar.getGeometry(),{maxZoom: 20});}
             latitude.innerHTML = pos.coords.latitude;
