@@ -1,41 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<title>App Mymy</title>
-		<meta charset="utf-8"/>	
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-		crossorigin=""/> <!-- leaflet-step1 
-	</head>
-	<body>
-
-<!-- CARTE
-		<div id="map"></div>
-		<style>#map { height: 100vh; }</style>		
-		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-		crossorigin=""></script>
-
-
-		<script>
-
-// Centrage de la carte autour des coordonnées		
-				var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 14);
-				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-					attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
-				}).addTo(map);
-
-// Affichage position
-				var moi = L.circle([pos.coords.latitude, pos.coords.longitude], {
-					color: 'blue',
-					fillColor: '#00f',
-					fillOpacity: 0.5,
-					radius: 15
-				}).addTo(map); 
--->
-
-
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -43,6 +5,7 @@
     <style>
         html,body,#map { width:100%; height:100%; margin:0; }
         #map {position: absolute; z-index: 5;}
+		.button {width: 150px; height: 50px; font-size: 20px;}
     </style>
 
   </head>
@@ -58,8 +21,8 @@
     <label>Longitude : </label><span id="longitude"></span>      </br>        
     <label>Altitude : </label><span id="altitude"></span>      </br></br>
 <!-- BUTTONS WALKING -->
-    <button id="start">Démarrer</button><p id="startInfo"></p>	</br>
-    <button id="stop">Arrêter</button> <p id="stopInfo"></p>	</br>
+    <button id="start" class="button">Démarrer</button><p id="startInfo"></p>	
+	</br><p id="stopInfo"></p>	    <button id="stop" class="button">Arrêter</button> </br></br>
     <p id="stats"></p>	</br>
 <!-- MAP -->
     <div  id = "map"> </div>
@@ -94,8 +57,6 @@
                 src: 'https://freeiconshop.com/wp-content/uploads/edd/location-arrow-solid.png',
                 rotateWithView: "false",
                 scale: 0.1,
-                // anchorXUnits: 'fraction',
-                // anchorYUnits: 'pixels',
             })        
         });
         iconCar.setStyle(iconStyle);
@@ -119,78 +80,51 @@ window.addEventListener("deviceorientation", handleOrientation, true);
             start.addEventListener("click",function(){
                 stop.disabled = false;
                 start.disabled = true;
+				stats.innerHTML = "";
+				stopInfo.innerHTML = "";
                 var distanceTot = 0;
                 var A = pos.coords;
-                //var altitudeMax = A.altitude;
-                //var altitudeMin = A.altitude;
+                var altitudeMax = A.altitude;
+                var altitudeMin = A.altitude;
                 startInfo.innerHTML = "Coordonnées de départ : " + A.altitude + "(m d'altitude) - " + A.latitude + "(lat) - " + A.longitude + "(lon)";
                 console.log(pos.coords);
-// setInterval(function(){
-//     var B = pos.coords;
-// // On affiche le petit trajet parcouru en fonction du temps défini
-//         var step = L.polygon([
-//             [A.latitude, A.longitude], //point précédent
-//             [B.latitude, B.longitude] //dernier point
-//         ],
-//         {
-//             color: 'red',
-//             fillColor: '#03f',
-//             fillOpacity: 0.5,
-//         }).addTo(map);
-// // On met à jour la distance totale en km et les dénivelés
-//         distanceTot += Math.round(findDistance(A,B)/1000);
-//         if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-//         if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-// // On met les données du nouveau point sur l'ancien pour le calcul suivant
-//         A = B;
-//     }, 30000); // toutes les 30 secondes
-            });
+				setInterval(function(){
+				    var B = pos.coords;
+			//Show path
+			//TODO
+				//         var step = L.polygon([
+				//             [A.latitude, A.longitude], //point précédent
+				//             [B.latitude, B.longitude] //dernier point
+				//         ],
+				//         {
+				//             color: 'red',
+				//             fillColor: '#03f',
+				//             fillOpacity: 0.5,
+				//         }).addTo(map);
+			//update distances
+					distanceTot += Math.round(findDistance(A,B)/1000);
+					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+			//Change old coordinate to new for next operation 
+					A = B;
+				}, 10000); // toutes les 10 secondes
+			});
 	
 	//Stop walking and edit stats
 			stop.addEventListener("click",function(){
 				stop.disabled = true;
 				start.disabled = false;
 				stopInfo.innerHTML = "Coordonnées d'arrivée : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
-// var B = pos.coords;
-// var step = L.polygon([
-// 	[A.latitude, A.longitude], //point précédent
-// 	[B.latitude, B.longitude] //dernier point
-// ],
-// {
-// 	color: 'red',
-// 	fillColor: '#03f',
-// 	fillOpacity: 0.5,
-// }).addTo(map);
-// if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-// if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-// distanceTot += Math.round(findDistance(A,B)/1000);
-// stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-//navigator.geolocation.clearWatch(surv);
+				stats.innerHTML = "STATISTIQUES : " 
+			// 	var B = pos.coords;
+			// // show last step
+			// //TODO
+			// 	if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+			// 	if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+			// 	distanceTot += Math.round(findDistance(A,B)/1000);
+			// 	stats.innerHTML += "</br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
 			});
-            
         });
-
-
-		
-
-
-    
-// //position icon
-//         const iconCar = new ol.Feature({ name: 'Null Island', population: 4000, rainfall: 500, size: [5, 5],});
-//         const iconStyle = new ol.style.Style({
-//             image: new ol.style.Icon({
-//                 anchor: [0,5, 1],
-//                 anchorXUnits: 'fraction',
-//                 anchorYUnits: 'pixels',
-//                 src: 'https://freeiconshop.com/wp-content/uploads/edd/location-arrow-solid.png',
-//                 rotateWithView: "false",
-//                 scale: 0.1,
-//                 anchorXUnits: 'fraction',
-//                 anchorYUnits: 'pixels',
-//             })        
-//         });
-//         iconCar.setStyle(iconStyle);
-//         new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
 
 //compass        
         function compassHeading(alpha, beta, gamma) {
@@ -239,25 +173,48 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 //Distance between two points
 		function findDistance(A,B) {
 			var R = 6371e3; // R is earth’s radius
-
 			var latA = A.latitude;
 			var latB = B.latitude;
 			var lonA = A.longitude;
 			var lonB = B.longitude;
-
 			var latAradians = (latA)*Math.PI/180;
 			var latBradians = (latB)*Math.PI/180;
 			var latRadians = (latB-latA)*Math.PI/180;
 			var lonRadians = (lonB-lonA)*Math.PI/180;
-
-			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
-					Math.cos(latAradians) * Math.cos(latBradians) *
-					Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
 			var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-
 			var distance = R * y;
-
 			return distance;
+		}
+
+//Draw line/point ---------------------------------------------------------------------------------------------------------------
+		drawPoint([7.289429, 43.675819]);
+		function drawPoint(coords)
+		{
+			var pointStroke = new ol.style.Stroke({color: '#000000',width: 1});
+			var pointFill = new ol.style.Fill({color: '#FF0000'});
+			var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: 10});
+			var style = new ol.style.Style({image: circle});
+
+			var pointFeature = new ol.Feature({});
+
+			pointFeature.setStyle(style);
+			new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
+			pointFeature.setGeometry(coords ? new ol.geom.Point(coords) : null);
+		}
+
+		drawLine([[7.0736057, 43.5976677],[7.289429, 43.675819]]);
+		function drawLine(coordsList) {
+			var line = new ol.geom.LineString(coordsList);
+			var lineStyle= new ol.style.Style({
+				stroke: new ol.style.Stroke({color: '#0000FF',width: 2})
+			});
+			var lineFeature = new ol.Feature({
+				geometry: line
+			});
+			lineFeature.setStyle(lineStyle);
+			new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [lineFeature],}),});
+			lineFeature.setGeometry(line);
 		}
 
     </script>

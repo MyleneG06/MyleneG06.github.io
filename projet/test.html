@@ -94,43 +94,82 @@
                 src: 'https://freeiconshop.com/wp-content/uploads/edd/location-arrow-solid.png',
                 rotateWithView: "false",
                 scale: 0.1,
-                // anchorXUnits: 'fraction',
-                // anchorYUnits: 'pixels',
             })        
         });
         iconCar.setStyle(iconStyle);
         new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
-        
-//path circle
-        const path = new ol.Feature();
-        const pathStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius : 5,
-                //width: 6, 
-                fill: new ol.style.Fill({color: [40, 40, 40, 0.8]}) //'white' color:
-            })    
-        });
-        path.setStyle(pathStyle);
-        new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [path],}),});
 
-// var route = new ol.Feature();
-// var coord = [[8, 26], [2.273403,41.385064]];
-// var geometry = new ol.geom.LineString(coord);
-// geometry.transform('EPSG:4326', 'EPSG:3857'); //Transform to your map projection
-// route.setGeometry(geometry);
-// vectorLayer.getSource().addFeature(route);
+//TEST-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
-//test
+//Circle (hand made point)---------------------------------------------------------------------------------------------------------------
+// var myStroke = new ol.style.Stroke({color: '#000000',width: 1});
+// var myFill = new ol.style.Fill({color: '#FF0000'});
+// var myCircle = new ol.style.Circle({fill: myFill, stroke: myStroke, radius: 10});
+// var style = new ol.style.Style({
+//     image: myCircle,
+
+// });
+
+// var pointFeature = new ol.Feature({
+//     name: 'Nice ville', size: [5, 5]
+// });
+
+// pointFeature.setStyle(style);
+// new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
+// pointFeature.setGeometry([7.289429, 43.675819] ? new ol.geom.Point([7.289429, 43.675819]) : null);
+
+drawPoint([7.289429, 43.675819]);
+
+function drawPoint(coords)
+{
+    var pointStroke = new ol.style.Stroke({color: '#000000',width: 1});
+    var pointFill = new ol.style.Fill({color: '#FF0000'});
+    var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: 10});
+    var style = new ol.style.Style({image: circle});
+
+    var pointFeature = new ol.Feature({
+        //size: [5, 5]
+    });
+
+    pointFeature.setStyle(style);
+    new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
+    pointFeature.setGeometry(coords ? new ol.geom.Point(coords) : null);
+}
+
+
+
+//Line---------------------------------------------------------------------------------------------------------------
+const points = [[7.0736057, 43.5976677],[7.289429, 43.675819]];
+
+var line = new ol.geom.LineString(points);
+var lineStyle= new ol.style.Style({
+    stroke: new ol.style.Stroke({color: '#0000FF',width: 2})
+});
+
+var lineFeature = new ol.Feature({
+    geometry: line
+});
+
+lineFeature.setStyle(lineStyle);
+new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [lineFeature],}),});
+lineFeature.setGeometry(line);
+
+
+
+
+
+
+//TEST--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //update map orientation  
         window.addEventListener("deviceorientation", handleOrientation, true);
-        
-        
+            
 // Center map on coordinates + icon + show latlon 
 navigator.geolocation.watchPosition(function(pos) {
             const coordinates = geolocation.getPosition();
+            console.log("test");
             // var moi = L.circle([pos.coords.latitude, pos.coords.longitude], {
 			// 		color: 'blue',
 			// 		fillColor: '#00f',
@@ -144,7 +183,6 @@ navigator.geolocation.watchPosition(function(pos) {
             longitude.innerHTML = pos.coords.longitude;
             if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
             view.setCenter([pos.coords.longitude, pos.coords.latitude]);
-
 
 
 //Start walking     
