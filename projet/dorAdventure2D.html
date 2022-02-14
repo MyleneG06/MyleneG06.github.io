@@ -1,24 +1,15 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 	<head>
 		<title>App Mymy</title>
 		<meta charset="utf-8"/>	
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-		crossorigin=""/> <!-- leaflet-step1 -->
+		crossorigin=""/> <!-- leaflet-step1 
 	</head>
 	<body>
-<!-- INFOS COORDONNEES -->
-        <label>Latitude : </label><span id="latitude"></span>        </br>
-        <label>Longitude : </label><span id="longitude"></span>      </br>        
-        <label>Altitude : </label><span id="altitude"></span>      </br></br>
 
-<!-- RANDOS -->
-		<button id="start">Démarrer</button><p id="startInfo"></p>	</br>
-		<button id="stop">Arrêter</button> <p id="stopInfo"></p>	</br>
-		<p id="stats"></p>	</br>
-
-<!-- CARTE -->
+<!-- CARTE
 		<div id="map"></div>
 		<style>#map { height: 100vh; }</style>		
 		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -27,20 +18,7 @@
 
 
 		<script>
-			var latitude = document.getElementById('latitude');
-			var longitude = document.getElementById('longitude');
-			var altitude = document.getElementById('altitude');
-			//let position = document.getElementById('position');
-			let start = document.getElementById('start');
-			let startInfo = document.getElementById('startInfo');
-			let stop = document.getElementById('stop');
-			let stopInfo = document.getElementById('stopInfo');
-			let stats = document.getElementById('stats');
 
-			var rota_;
-			window.addEventListener("deviceorientation", handleOrientation, true);
-
-			navigator.geolocation.watchPosition(function(pos) {
 // Centrage de la carte autour des coordonnées		
 				var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 14);
 				L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
@@ -53,149 +31,169 @@
 					fillColor: '#00f',
 					fillOpacity: 0.5,
 					radius: 15
-				}).addTo(map);
-				//console.log("POSITION : "+ pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) ");
-				latitude.innerHTML = pos.coords.latitude;
-                longitude.innerHTML = pos.coords.longitude;
-                if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
+				}).addTo(map); 
+-->
 
-// Récupération des données de départ et arrivée
-				stop.disabled = true;
-				//var altitudeMax;
-				//var altitudeMin;
-				var distanceTot;
-				var A;
 
-				start.addEventListener("click",function(){
 
-					stop.disabled = false;
-					start.disabled = true;
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DorAdventure2D</title>
+    <style>
+        html,body,#map { width:100%; height:100%; margin:0; }
+        #map {position: absolute; z-index: 5;}
+    </style>
 
-					startInfo.innerHTML = "Horaire de départ : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
-					//position.innerHTML = "";
-					
-					distanceTot = 0;
+  </head>
+  
+  <body>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/build/ol.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <label>Info : </label><span id="accuracy"></span>  </br>
+<!-- INFOS COORDONNINATES -->
+    <label>Latitude : </label><span id="latitude"></span>        </br>
+    <label>Longitude : </label><span id="longitude"></span>      </br>        
+    <label>Altitude : </label><span id="altitude"></span>      </br></br>
+<!-- BUTTONS WALKING -->
+    <button id="start">Démarrer</button><p id="startInfo"></p>	</br>
+    <button id="stop">Arrêter</button> <p id="stopInfo"></p>	</br>
+    <p id="stats"></p>	</br>
+<!-- MAP -->
+    <div  id = "map"> </div>
 
-					A = pos.coords;
-					console.log("A : "  + A);
-					altitudeMin = A.altitude;
-					console.log("altitude min : "  + altitudeMin);
-					altitudeMax = A.altitude;
-					console.log("altitude max : "  + altitudeMax);
+    <script>
+        var latitude = document.getElementById('latitude');
+        var longitude = document.getElementById('longitude');
+        var altitude = document.getElementById('altitude');
+        let start = document.getElementById('start');
+        let startInfo = document.getElementById('startInfo');
+        let stop = document.getElementById('stop');
+        let stopInfo = document.getElementById('stopInfo');
+        let stats = document.getElementById('stats');
 
-					setInterval(function(){
-						var B = pos.coords;
+//initialize data and show map
+        var rota_;
+        var vectorSource = new ol.source.Vector();
+        vectorLayer = new ol.layer.Vector({source: vectorSource});
+        const view = new ol.View({center: [10,10], zoom: 20, projection: 'EPSG:4326'});
+        const layers = [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer];
+        const map = new ol.Map({ layers: layers, target: 'map', view: view,});
+        const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
+        geolocation.setTracking(1);   
+
+//compass icon
+        const iconCar = new ol.Feature({ name: 'Null Island', population: 4000, rainfall: 500, size: [5, 5],});
+        const iconStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0,5, 1],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                src: 'https://freeiconshop.com/wp-content/uploads/edd/location-arrow-solid.png',
+                rotateWithView: "false",
+                scale: 0.1,
+                // anchorXUnits: 'fraction',
+                // anchorYUnits: 'pixels',
+            })        
+        });
+        iconCar.setStyle(iconStyle);
+        new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
+
+//update map orientation  
+window.addEventListener("deviceorientation", handleOrientation, true);
+		
+// Center map on coordinates + icon + show latlon 
+        navigator.geolocation.watchPosition(function(pos) {
+            const coordinates = geolocation.getPosition();
+            document.getElementById('accuracy').innerHTML = pos.coords.accuracy
+            iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+            //View.js:1344 Uncaught TypeError: Cannot read properties of null (reading 'getSimplifiedGeometry' at n.fit (View.js:1344:53) at test.html:49:54if (map.getView() != null){map.getView().fit(iconCar.getGeometry(),{maxZoom: 30});}
+            latitude.innerHTML = pos.coords.latitude;
+            longitude.innerHTML = pos.coords.longitude;
+            if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
+            view.setCenter([pos.coords.longitude, pos.coords.latitude]);
+
+	//Start walking     
+            start.addEventListener("click",function(){
+                stop.disabled = false;
+                start.disabled = true;
+                var distanceTot = 0;
+                var A = pos.coords;
+                //var altitudeMax = A.altitude;
+                //var altitudeMin = A.altitude;
+                startInfo.innerHTML = "Coordonnées de départ : " + A.altitude + "(m d'altitude) - " + A.latitude + "(lat) - " + A.longitude + "(lon)";
+                console.log(pos.coords);
+// setInterval(function(){
+//     var B = pos.coords;
+// // On affiche le petit trajet parcouru en fonction du temps défini
+//         var step = L.polygon([
+//             [A.latitude, A.longitude], //point précédent
+//             [B.latitude, B.longitude] //dernier point
+//         ],
+//         {
+//             color: 'red',
+//             fillColor: '#03f',
+//             fillOpacity: 0.5,
+//         }).addTo(map);
+// // On met à jour la distance totale en km et les dénivelés
+//         distanceTot += Math.round(findDistance(A,B)/1000);
+//         if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+//         if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// // On met les données du nouveau point sur l'ancien pour le calcul suivant
+//         A = B;
+//     }, 30000); // toutes les 30 secondes
+            });
 	
-// On affiche le petit trajet parcouru en fonction du temps défini
-						var step = L.polygon([
-							[A.latitude, A.longitude], //point précédent
-							[B.latitude, B.longitude] //dernier point
-						],
-						{
-							color: 'red',
-							fillColor: '#03f',
-							fillOpacity: 0.5,
-						}).addTo(map);
-
-
-	// On met à jour la distance totale en km et les dénivelés
-						distanceTot += Math.round(findDistance(A,B)/1000);
-						if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-						if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-
-
-	// On met les données du nouveau point sur l'ancien pour le calcul suivant
-						A = B;
-
-					}, 30000); // toutes les 30 secondes
-
-				});
-// 				stop.addEventListener("click",function(){
-// 					stop.disabled = true;
-// 					start.disabled = false;
-
-// 					stopInfo.innerHTML = "Horaire d'arrivée : " + Date() + "</br> Coordonnées : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
-
-// 					var B = pos.coords;
-// 					var step = L.polygon([
-// 						[A.latitude, A.longitude], //point précédent
-// 						[B.latitude, B.longitude] //dernier point
-// 					],
-// 					{
-// 						color: 'red',
-// 						fillColor: '#03f',
-// 						fillOpacity: 0.5,
-// 					}).addTo(map);
-
-// 					if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-// 					if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-// 					distanceTot += Math.round(findDistance(A,B)/1000);
-
-// 					stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-
-					//navigator.geolocation.clearWatch(surv);
-				// });
-
-
-				let carte = document.getElementById('map');		
-				carte.append(map);
-
+	//Stop walking and edit stats
+			stop.addEventListener("click",function(){
+				stop.disabled = true;
+				start.disabled = false;
+				stopInfo.innerHTML = "Coordonnées d'arrivée : " + pos.coords.altitude + "(m d'altitude) - " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon)";
+// var B = pos.coords;
+// var step = L.polygon([
+// 	[A.latitude, A.longitude], //point précédent
+// 	[B.latitude, B.longitude] //dernier point
+// ],
+// {
+// 	color: 'red',
+// 	fillColor: '#03f',
+// 	fillOpacity: 0.5,
+// }).addTo(map);
+// if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
+// if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
+// distanceTot += Math.round(findDistance(A,B)/1000);
+// stats.innerHTML = "STATISTIQUES </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+//navigator.geolocation.clearWatch(surv);
 			});
-			//}, error, {timeout:10000});
-
-    //   if(window.DeviceOrientationEvent) {
-	// 	window.addEventListener("deviceorientation", handleOrientation, true);
-    //     // window.addEventListener('deviceorientation', function(orientation) {
-    //     //   console.log("Alpha : " + orientation.alpha) ;
-    //     //});
-    //  }
+            
+        });
 
 
-			//var watchID = navigator.geolocation.watchPosition(success, error, {timeout:10000});
-			//navigator.geolocation.getCurrentPosition(success, error); 
+		
 
-				
-// let sensor = new Magnetometer();
-// sensor.start();
 
-// sensor.onreading = () => {
-// console.log("Magnetic field along the X-axis " + sensor.x);
-// console.log("Magnetic field along the Y-axis " + sensor.y);
-// console.log("Magnetic field along the Z-axis " + sensor.z);
-// };
+    
+// //position icon
+//         const iconCar = new ol.Feature({ name: 'Null Island', population: 4000, rainfall: 500, size: [5, 5],});
+//         const iconStyle = new ol.style.Style({
+//             image: new ol.style.Icon({
+//                 anchor: [0,5, 1],
+//                 anchorXUnits: 'fraction',
+//                 anchorYUnits: 'pixels',
+//                 src: 'https://freeiconshop.com/wp-content/uploads/edd/location-arrow-solid.png',
+//                 rotateWithView: "false",
+//                 scale: 0.1,
+//                 anchorXUnits: 'fraction',
+//                 anchorYUnits: 'pixels',
+//             })        
+//         });
+//         iconCar.setStyle(iconStyle);
+//         new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
 
-// sensor.onerror = event => console.log(event.error.name, event.error.message);
-
-			function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
-
-			function findDistance(A,B) {
-				var R = 6371e3; // R is earth’s radius
-
-				var latA = A.latitude;
-				var latB = B.latitude;
-				var lonA = A.longitude;
-				var lonB = B.longitude;
-
-				var latAradians = (latA)*Math.PI/180;
-				var latBradians = (latB)*Math.PI/180;
-				var latRadians = (latB-latA)*Math.PI/180;
-				var lonRadians = (lonB-lonA)*Math.PI/180;
-				// var latAradians = toRadians(latA);
-				// var latBradians = toRadians(latB);
-				// var latRadians = toRadians(latB-latA);
-				// var lonRadians = toRadians(lonB-lonA);
-
-				var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
-						Math.cos(latAradians) * Math.cos(latBradians) *
-						Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
-				var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-
-				var distance = R * y;
-
-				return distance;
-			}
-
-			function compassHeading(alpha, beta, gamma) {
+//compass        
+        function compassHeading(alpha, beta, gamma) {
             var alphaRad = -alpha * (Math.PI / 180);
             var betaRad = beta * (Math.PI / 180);
             var gammaRad = gamma * (Math.PI / 180);
@@ -206,54 +204,62 @@
             var sB = Math.sin(betaRad);
             var cG = Math.cos(gammaRad);
             var sG = Math.sin(gammaRad);
-
             var rA = - cA * sG - sA * sB * cG;
             var rB = - sA * sG + cA * sB * cG;
             var rC = - cB * cG;
-
             var compassHeading = Math.atan(rA / rB);
-
             if(rB < 0) {
                 compassHeading += Math.PI;
             }else if(rA < 0) {
                 compassHeading += 2 * Math.PI;
             }
             return compassHeading;
-
-            }
-        function locate()
-        {
-        const coordinates = geolocation.getPosition();
-        iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
-        map.getView().fit(iconCar.getGeometry(),{maxZoom: 16});
         }
 
+//update map when compass orientation changes 
         function handleOrientation(event) {
-        absolute = event.absolute;
-        alpha    = event.alpha;
-        beta     = event.beta;
-        gamma    = event.gamma;
-        if(isNaN(rota_))
-        {
-            rota_ = compassHeading(alpha, beta, gamma);
-            view.setCenter([boylam,enlem]);
-            //iconStyle.getImage().setRotateWithView(1);
-            iconStyle.getImage().setRotation(rota_);
+            absolute = event.absolute;
+            alpha    = event.alpha;
+            beta     = event.beta;
+            gamma    = event.gamma;
+            if(isNaN(rota_)) {
+                rota_ = compassHeading(alpha, beta, gamma);
+                //iconStyle.getImage().setRotateWithView(1);
+            }else{
+                eski_yon = rota_;
+                rota_ = compassHeading(alpha, beta, gamma);   
+            }
+            if(rota_ != null && !isNaN(rota_)) {
+                //iconStyle.getImage().setRotateWithView(0);
+                map.getView().setRotation(rota_);
+            }
+            view.setCenter([longitude.innerHTML,latitude.innerHTML]);
         }
-        else
-        {
-            eski_yon = rota_;
-            rota_ = compassHeading(alpha, beta, gamma);   
-        }
-        if(rota_ != null && !isNaN(rota_))
-        {
-            iconStyle.getImage().setRotateWithView(0);
-            map.getView().setRotation(rota_);
-        }
-        }
-		
 
-			
-		</script>
-	</body>
+//Distance between two points
+		function findDistance(A,B) {
+			var R = 6371e3; // R is earth’s radius
+
+			var latA = A.latitude;
+			var latB = B.latitude;
+			var lonA = A.longitude;
+			var lonB = B.longitude;
+
+			var latAradians = (latA)*Math.PI/180;
+			var latBradians = (latB)*Math.PI/180;
+			var latRadians = (latB-latA)*Math.PI/180;
+			var lonRadians = (lonB-lonA)*Math.PI/180;
+
+			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
+					Math.cos(latAradians) * Math.cos(latBradians) *
+					Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+			var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+
+			var distance = R * y;
+
+			return distance;
+		}
+
+    </script>
+  </body>
 </html>
