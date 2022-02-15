@@ -83,11 +83,13 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 				stopInfo.innerHTML = "";
                 var distanceTot = 0;
                 const startP = pos.coords;
-                var altitudeMax = startP.altitude;
-                var altitudeMin = startP.altitude;
-                startInfo.innerHTML = "Coordonnées de départ : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
+                console.log("start point : "); ////////////
+                console.log(startP); ////////////
+                // var altitudeMax = startP.altitude;
+                // var altitudeMin = startP.altitude;
+                startInfo.innerHTML = "DEPART : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
 				drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
-			    var lastP = startP;
+			    //var lastP = startP;
 			// 	var currentP = pos.coords;
 			// 	if (findDistance(lastP,currentP)/1000 > 10) {
 			// //Show path
@@ -106,16 +108,18 @@ window.addEventListener("deviceorientation", handleOrientation, true);
                     stop.disabled = true;
                     start.disabled = false;
                     const endP = pos.coords;
-                    stopInfo.innerHTML = "Coordonnées d'arrivée : " + endP.altitude + "(m d'altitude) - " + endP.latitude + "(lat) - " + endP.longitude + "(lon)";
+                    console.log("end point : "); ////////////
+                    console.log(endP); ////////////
+                    stopInfo.innerHTML = "ARRIVEE : " + endP.altitude + "(m d'altitude) - " + endP.latitude + "(lat) - " + endP.longitude + "(lon)";
                 // show last step
                     drawPoint([endP.longitude, endP.latitude], 20, '#FF0000'); // big red ending point
-                    drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
+                    //drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
                 // //update distances
-                    distanceTot += Math.round(findDistance(endP, lastP)/1000);
-            		if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
-            		if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
-                    stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-                    //stats.innerHTML = "STATISTIQUES : ";
+                    // distanceTot += Math.round(findDistance(endP, lastP)/1000);
+            		// if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
+            		// if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
+                    // stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+                    stats.innerHTML = "STATISTIQUES : ";
                 });
             });
 		});
