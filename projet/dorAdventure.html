@@ -85,8 +85,8 @@ window.addEventListener("deviceorientation", handleOrientation, true);
                 const startP = pos.coords;
                 console.log("start point : "); ////////////
                 console.log(startP); ////////////
-                // var altitudeMax = startP.altitude;
-                // var altitudeMin = startP.altitude;
+                var altitudeMax = startP.altitude;
+                var altitudeMin = startP.altitude;
                 startInfo.innerHTML = "DEPART : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
 				drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
 			    //var lastP = startP;
@@ -118,8 +118,7 @@ window.addEventListener("deviceorientation", handleOrientation, true);
                     // distanceTot += Math.round(findDistance(endP, lastP)/1000);
             		// if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
             		// if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
-                    // stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-                    stats.innerHTML = "STATISTIQUES : ";
+                    stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
                 });
             });
 		});
