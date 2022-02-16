@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>fix distance + step 10m</title>
+    <title>step 15m to test</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -25,18 +25,11 @@
 			<button id="stat" class="button" onclick="myPerf()">Statistiques</button>
 		</div>
 	</br></br>
-	<!-- ------------------------------------------------------------------------------------------- -->
-		<div id="infoStartStop"> 
-			<p id="dataInfo" class="info">...</p>  
-		</div>
-	</br></br>
-	<!-- ------------------------------------------------------------------------------------------- -->
     	<div  id = "map"> </div>
 	</br></br>
 	</div>
 
     <script>
-		var dataInfo = document.getElementById('dataInfo'); //-----------------------------------
         var info = document.getElementById('info');
 		let position = document.getElementById('position');
 		let start = document.getElementById('start');
@@ -56,7 +49,7 @@
 	//show map
         var vectorSource = new ol.source.Vector();
         vectorLayer = new ol.layer.Vector({source: vectorSource});
-        const view = new ol.View({center: [10,10], zoom: 0, projection: 'EPSG:4326'}); //------------------------------------------------
+        const view = new ol.View({center: [10,10], zoom: 0, projection: 'EPSG:4326'}); 
         const layers = [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer];
         const map = new ol.Map({ layers: layers, target: 'map', view: view,});
         const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
@@ -79,7 +72,7 @@
 	//update map orientation
 		window.addEventListener("deviceorientation", handleOrientation, true);
 		
-	//icon on coordinates and show info 
+	//icon on coordinates 
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
 			currentP = pos.coords;
@@ -90,13 +83,12 @@
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//every 20' : calculate distance and track steps
 				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP) > 20) { //----------------------------------------------------------
+					if (findDistance(lastP,currentP) > 15) { //----------------------------------------------------------
 						drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
 						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
 					}
 					distanceTot += (Math.round(findDistance(lastP, currentP)))/1000;
-					dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " +Math.round(altitudeMin)+" et " +Math.round(altitudeMax) + " d'altitude";
 				}, 20000);			 
 			}
 		});
@@ -137,7 +129,6 @@
 			distanceTot += (Math.round(findDistance(endP, lastP)))/1000;
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
-			dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " + Math.round(altitudeMin) +" et " + Math.round(altitudeMax) + " d'altitude";
 		//zoom out to show path
 			zoomOnPosition(16); //---------------------
 		}
@@ -207,8 +198,7 @@
 		}
 
 //Draw  ---------------------------------------------------------------------------------------------------------------
-		function drawPoint(coordP, radiusP, colorP)
-		{
+		function drawPoint(coordP, radiusP, colorP){
 			var pointStroke = new ol.style.Stroke({color: colorP ,width: 1});
 			var pointFill = new ol.style.Fill({color: colorP});
 			var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: radiusP});
