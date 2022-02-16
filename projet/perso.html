@@ -15,39 +15,29 @@
     <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    
-<!-- INFOS COORDONNINATES -->
-	<p id="currentInfo">CURRENT</p>
-    <label>Latitude : </label><span id="latitude"></span>        </br>
-    <label>Longitude : </label><span id="longitude"></span>      </br>        
-    <label>Altitude : </label><span id="altitude"></span>      </br>
-    <label>Précision : </label><span id="accuracy"></span>  </br></br>
-<!-- BUTTONS WALKING -->
-    <button id="start" class="button" onclick="onStart()">Démarrer</button>
-	<p id="startInfo">START</p>	
-	<!-- <label>Lat : </label><span id="latPstart"></span>        </br>
-    <label>Lon : </label><span id="lonPstart"></span>      </br>        
-    <label>Alt : </label><span id="altPstart"></span>      </br></br> -->
+    <div id="app">
+	<!-- INFOS COORDONNINATES -->
+		<p id="currentInfo">POSITION</p>
+		<!-- <label>Latitude : </label><span id="latitude"></span>
+		<label>   -   Longitude : </label><span id="longitude"></span>        
+		<label>   -   Altitude : </label><span id="altitude"></span>
+		<label>   -   Précision : </label><span id="accuracy"></span>  </br></br> -->
+	<!-- BUTTONS WALKING -->
+		<button id="start" class="button" onclick="onStart()">Démarrer</button>     
+		<button id="stop" class="button" onclick="onStop()">Arrêter</button>    
+		<p id="startInfo">START</p>	
+		<p id="lastInfo">TEMP</p>    
+		<p id="stopInfo">STOP</p> </br>
+		<p id="stats"></p>	</br>
+	<!-- MAP -->
+    	<div  id = "map"> </div>
+	</div>
 
-	<p id="lastInfo">LAST</p>
-	<!-- <label>Lat : </label><span id="latPlast"></span>        </br>
-    <label>Lon : </label><span id="lonPlast"></span>      </br>        
-    <label>Alt : </label><span id="altPlast"></span>      </br></br> -->
-		    
-	<button id="stop" class="button" onclick="onStop()">Arrêter</button>
-    <p id="stopInfo">STOP</p>
-	<!-- <label>Lat : </label><span id="latPstop"></span>        </br>
-    <label>Lon : </label><span id="lonPstop"></span>      </br>        
-    <label>Alt : </label><span id="altPstop"></span>      </br></br> -->
-
-	<p id="stats"></p>	</br>
-<!-- MAP -->
-    <div  id = "map"> </div>
 
     <script>
-        var latitude = document.getElementById('latitude');
-        var longitude = document.getElementById('longitude');
-        var altitude = document.getElementById('altitude');
+        // var latitude = document.getElementById('latitude');
+        // var longitude = document.getElementById('longitude');
+        // var altitude = document.getElementById('altitude');
         let start = document.getElementById('start');
         // let startInfo = document.getElementById('startInfo');
         let stop = document.getElementById('stop');
@@ -92,13 +82,15 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 		
 // Center map on coordinates + icon + show latlon 
         navigator.geolocation.watchPosition(function(pos) {
-            document.getElementById('accuracy').innerHTML = pos.coords.accuracy
+            //document.getElementById('accuracy').innerHTML = pos.coords.accuracy
+			// latitude.innerHTML = pos.coords.latitude;
+            // longitude.innerHTML = pos.coords.longitude;
+            // if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
-            latitude.innerHTML = pos.coords.latitude;
-            longitude.innerHTML = pos.coords.longitude;
-            if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
             view.setCenter([pos.coords.longitude, pos.coords.latitude]);
 			currentP = pos.coords;
+			currentInfo.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(alt) </br> "+ pos.coords.accuracy +" (ac latlon)   -   " + pos.coords.altitudeAccuracy + "(ac alt)" ;
+			//console.log(currentP);
 		});
 
     
@@ -141,7 +133,7 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 			drawPoint([endP.longitude, endP.latitude], 10, '#FF0000'); // big red ending point
 			drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
 		//update stats
-			distanceTot += Math.round(findDistance(endP, lastP));
+			distanceTot += (Math.round(findDistance(endP, lastP)))/1000;
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 			stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
@@ -188,7 +180,7 @@ window.addEventListener("deviceorientation", handleOrientation, true);
                 //iconStyle.getImage().setRotateWithView(0);
                 map.getView().setRotation(rota_);
             }
-            view.setCenter([longitude.innerHTML,latitude.innerHTML]);
+            //view.setCenter([longitude.innerHTML,latitude.innerHTML]);
         }
 
 //Distance between two points
@@ -221,7 +213,7 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
 			var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
 			var distance = earthRadius * y;
-			return distance/1000;
+			return distance;
 		}
 
 //Draw  ---------------------------------------------------------------------------------------------------------------
