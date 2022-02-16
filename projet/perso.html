@@ -104,10 +104,6 @@ window.addEventListener("deviceorientation", handleOrientation, true);
     
 //start walking
 		function onStart(){
-
-			console.log("start");
-			console.log("currentP");
-			console.log(currentP);
 			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};
 			startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
 			stop.disabled = false;
@@ -118,7 +114,9 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 			altitudeMax = startP.altitude;
 			altitudeMin = startP.altitude;
 			drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
-			var lastP = startP;
+			var lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};
+			console.log("lastP (=start)"); //---------------------------------------------------
+			console.log(lastP); //---------------------------------------------------
 	
 	// 		// 	if (findDistance(lastP,currentP)/1000 > 10) {
 	// 		// //Show path
@@ -131,34 +129,25 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 	// 		// //Change old coordinate to new for next operation 
 	// 		// 		lastP = currentP;
 
-			console.log("starP");
-			console.log(startP);
-			// latPstart.innerHTML = currentP.latitude;
-			// lonPstart.innerHTML = currentP.longitude;
-			// altPstart.innerHTML = currentP.altitude;
-			// latPstop.innerHTML = "";
-			// lonPstop.innerHTML = "";
-			// altPstop.innerHTML = "";
-    //             
+	console.log("start"); //---------------------------------------------------
+           
 		}
 
 //stop walking and edit stats
 		function onStop(){
-			console.log("stop");
 			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};
 			stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
-			console.log("endP");
-			console.log(endP);
 			stop.disabled = true;
 			start.disabled = false;
 		// show last step
 			drawPoint([endP.longitude, endP.latitude], 20, '#FF0000'); // big red ending point
 			//drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
-		// //update distances
-			// distanceTot += Math.round(findDistance(endP, lastP)/1000);
-			// if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
-			// if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
+		//update distances
+			//distanceTot += Math.round(findDistance(endP, lastP)/1000);
+			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
+			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 			stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+	console.log("stop"); //---------------------------------------------------
 		
 		}
 
