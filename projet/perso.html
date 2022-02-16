@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>tests perso</title>
+    <title>Test</title>
     <style>
         html,body,#map { width:100%; height:100%; margin:0; }
         #map {position: absolute; z-index: 5;}
@@ -15,15 +15,32 @@
     <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    <label>Info : </label><span id="accuracy"></span>  </br>
+    
 <!-- INFOS COORDONNINATES -->
+	<p id="currentInfo">CURRENT</p>
     <label>Latitude : </label><span id="latitude"></span>        </br>
     <label>Longitude : </label><span id="longitude"></span>      </br>        
-    <label>Altitude : </label><span id="altitude"></span>      </br></br>
+    <label>Altitude : </label><span id="altitude"></span>      </br>
+    <label>Précision : </label><span id="accuracy"></span>  </br></br>
 <!-- BUTTONS WALKING -->
-    <button id="start" class="button">Démarrer</button><p id="startInfo"></p>	
-	</br><p id="stopInfo"></p>	    <button id="stop" class="button">Arrêter</button> </br></br>
-    <p id="stats"></p>	</br>
+    <button id="start" class="button" onclick="onStart()">Démarrer</button>
+	<p id="startInfo">START</p>	
+	<!-- <label>Lat : </label><span id="latPstart"></span>        </br>
+    <label>Lon : </label><span id="lonPstart"></span>      </br>        
+    <label>Alt : </label><span id="altPstart"></span>      </br></br> -->
+
+	<p id="lastInfo">LAST</p>
+	<!-- <label>Lat : </label><span id="latPlast"></span>        </br>
+    <label>Lon : </label><span id="lonPlast"></span>      </br>        
+    <label>Alt : </label><span id="altPlast"></span>      </br></br> -->
+		    
+	<button id="stop" class="button" onclick="onStop()">Arrêter</button>
+    <p id="stopInfo">STOP</p>
+	<!-- <label>Lat : </label><span id="latPstop"></span>        </br>
+    <label>Lon : </label><span id="lonPstop"></span>      </br>        
+    <label>Alt : </label><span id="altPstop"></span>      </br></br> -->
+
+	<p id="stats"></p>	</br>
 <!-- MAP -->
     <div  id = "map"> </div>
 
@@ -32,13 +49,21 @@
         var longitude = document.getElementById('longitude');
         var altitude = document.getElementById('altitude');
         let start = document.getElementById('start');
-        let startInfo = document.getElementById('startInfo');
+        // let startInfo = document.getElementById('startInfo');
         let stop = document.getElementById('stop');
-        let stopInfo = document.getElementById('stopInfo');
+        // let stopInfo = document.getElementById('stopInfo');
         let stats = document.getElementById('stats');
 
 //initialize data and show map
-        var rota_;
+		let startP;
+		let endP;
+		var currentP;
+		var lastP;
+		var distanceTot;
+		var altitudeMax;
+		var altitudeMin;
+
+		var rota_;
         var vectorSource = new ol.source.Vector();
         vectorLayer = new ol.layer.Vector({source: vectorSource});
         const view = new ol.View({center: [10,10], zoom: 20, projection: 'EPSG:4326'});
@@ -63,64 +88,79 @@
         new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
 
 //update map orientation  
-		window.addEventListener("deviceorientation", handleOrientation, true);
+window.addEventListener("deviceorientation", handleOrientation, true);
 		
 // Center map on coordinates + icon + show latlon 
         navigator.geolocation.watchPosition(function(pos) {
-            const coordinates = geolocation.getPosition();
             document.getElementById('accuracy').innerHTML = pos.coords.accuracy
-            iconCar.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
-            //View.js:1344 Uncaught TypeError: Cannot read properties of null (reading 'getSimplifiedGeometry' at n.fit (View.js:1344:53) at test.html:49:54if (map.getView() != null){map.getView().fit(iconCar.getGeometry(),{maxZoom: 30});}
+            iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
             latitude.innerHTML = pos.coords.latitude;
             longitude.innerHTML = pos.coords.longitude;
             if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
             view.setCenter([pos.coords.longitude, pos.coords.latitude]);
+			currentP = pos.coords;
+		});
 
-	//Start walking     
-            start.addEventListener("click",function(){
-                stop.disabled = false;
-                start.disabled = true;
-				stats.innerHTML = "";
-				stopInfo.innerHTML = "";
-                var distanceTot = 0;
-                var startP = pos.coords;
-                var altitudeMax = startP.altitude;
-                var altitudeMin = startP.altitude;
-                startInfo.innerHTML = "Coordonnées de départ : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
-				drawPoint([startP.longitude, startP.latitude], 8);
+    
+// //start walking
+// 		function onStart(){
 
-			// 	var oldP = startP;
-			// 	var currentP = pos.coords;
-			// 	if (findDistance(oldP,currentP)*1000 >20) {
-			// //Show path
-			// 		drawPoint([currentP.longitude, currentP.latitude], 3);
-			// 		drawLine([[currentP.longitude, currentP.latitude],[oldP.longitude, oldP.latitude]]);
-			// //update distances
-			// 		distanceTot += Math.round(findDistance(A,B)/1000);
-			// 		if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-			// 		if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-			// //Change old coordinate to new for next operation 
-			// 		oldP = currentP;
-			});
+// 			console.log("start");
+// 			console.log("currentP");
+// 			console.log(currentP);
+// 			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};
+// 			console.log("starP");
+// 			console.log(startP);
+// 			// latPstart.innerHTML = currentP.latitude;
+// 			// lonPstart.innerHTML = currentP.longitude;
+// 			// altPstart.innerHTML = currentP.altitude;
+// 			startInfo.innerHTML = "DEPART : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
 
+// 			stop.disabled = false;
+// 			start.disabled = true;
+			
+// 			// latPstop.innerHTML = "";
+// 			// lonPstop.innerHTML = "";
+// 			// altPstop.innerHTML = "";
+// 			stats.innerHTML = "";
+//     //             distanceTot = 0;
+//     //             startP = pos.coords;
+//     //             altitudeMax = startP.altitude;
+//     //             altitudeMin = startP.altitude;
+// 	// 			drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
+// 	// 		    //var lastP = startP;
+// 	// 		// 	var currentP = pos.coords;
+// 	// 		// 	if (findDistance(lastP,currentP)/1000 > 10) {
+// 	// 		// //Show path
+// 	// 		// 		drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
+// 	// 		// 		drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
+// 	// 		// //update distances
+// 	// 		// 		distanceTot += Math.round(findDistance(A,B)/1000);
+// 	// 		// 		if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+// 	// 		// 		if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+// 	// 		// //Change old coordinate to new for next operation 
+// 	// 		// 		lastP = currentP;
+// 		}
 
-	
-	//Stop walking and edit stats
-			stop.addEventListener("click",function(){
-				stop.disabled = true;
-				start.disabled = false;
-				var endP = pos.coords;
-				stopInfo.innerHTML = "Coordonnées d'arrivée : " + endP.altitude + "(m d'altitude) - " + endP.latitude + "(lat) - " + endP.longitude + "(lon)";
-		// show last step
-				drawPoint([endP.longitude, endP.latitude], 8);
-		// 		drawLine([[endP.longitude, endP.latitude],[oldP.longitude, oldP.latitude]]);
-		// //update distances
-		// 		distanceTot += Math.round(findDistance(A,B)/1000);
-		// 		if (altitudeMin>B.altitude) {altitudeMin = B.altitude}
-		// 		if (altitudeMax<B.altitude) {altitudeMax = B.altitude}
-		// 		stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-			});
-        });
+// //stop walking and edit stats
+// 		function onStop(){
+// 			console.log("stop");
+// 			stop.disabled = true;
+// 			start.disabled = false;
+//     //                 endP = pos.coords;
+//     //                 console.log("end point : "); ////////////
+//     //                 console.log(endP); ////////////
+//     //                 stopInfo.innerHTML = "ARRIVEE : " + endP.altitude + "(m d'altitude) - " + endP.latitude + "(lat) - " + endP.longitude + "(lon)";
+//     //             // show last step
+//     //                 drawPoint([endP.longitude, endP.latitude], 20, '#FF0000'); // big red ending point
+//     //                 //drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
+//     //             // //update distances
+//     //                 // distanceTot += Math.round(findDistance(endP, lastP)/1000);
+//     //         		// if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
+//     //         		// if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
+//     //                 stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
+//     //             
+// 		}
 
 //compass        
         function compassHeading(alpha, beta, gamma) {
@@ -183,11 +223,13 @@
 			return distance;
 		}
 
-//Draw line/point ---------------------------------------------------------------------------------------------------------------
-		//drawPoint([7.289429, 43.675819], 10);
-		function drawPoint(lonlatP, radiusP){
-			var pointStroke = new ol.style.Stroke({color: '#000000',width: 1});
-			var pointFill = new ol.style.Fill({color: '#FF0000'});
+//Draw  ---------------------------------------------------------------------------------------------------------------
+		// drawPoint([7.289429, 43.675819], 8, '#FF0000'); // big red point
+		// drawPoint([7.0736057, 43.5976677], 3, '#0000FF'); // little blue point
+		function drawPoint(coordP, radiusP, colorP)
+		{
+			var pointStroke = new ol.style.Stroke({color: colorP ,width: 1});
+			var pointFill = new ol.style.Fill({color: colorP});
 			var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: radiusP});
 			var style = new ol.style.Style({image: circle});
 
@@ -195,15 +237,14 @@
 
 			pointFeature.setStyle(style);
 			new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
-			pointFeature.setGeometry(lonlatP ? new ol.geom.Point(lonlatP) : null);
+			pointFeature.setGeometry(coordP ? new ol.geom.Point(coordP) : null);
 		}
 
-
-		//drawLine([[7.0736057, 43.5976677],[7.289429, 43.675819]]);
-		function drawLine(lonlatList) {
-			var line = new ol.geom.LineString(lonlatList);
+		// drawLine([[7.0736057, 43.5976677],[7.289429, 43.675819]]); // thin black line
+		function drawLine(coordsList) {
+			var line = new ol.geom.LineString(coordsList);
 			var lineStyle= new ol.style.Style({
-				stroke: new ol.style.Stroke({color: '#0000FF',width: 2})
+				stroke: new ol.style.Stroke({color: '#000000',width: 1})
 			});
 			var lineFeature = new ol.Feature({
 				geometry: line
