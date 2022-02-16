@@ -38,7 +38,7 @@
 	</div>
 
     <script>
-		var dataInfo = document.getElementById('dataInfo');
+		//var dataInfo = document.getElementById('dataInfo');
 		var startInfo = document.getElementById('startInfo');
 		var stopInfo = document.getElementById('stopInfo');
         var info = document.getElementById('info');
@@ -91,14 +91,14 @@
 		//if walking : zoom on my position, zoom check altitudes min/max
 			if (start.disabled == true){
 // console.log("START OK");
-dataInfo.innerHTML = "DATA : </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
+//dataInfo.innerHTML = "DATA : </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
 // ----------------------------------------------------------------------------------------
 				zoomOnPosition(20);
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//every 10' : calculate distance
 				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP) > 0.05) {
+					if (findDistance(lastP,currentP) > 5) {
 						drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 						//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
 						distanceTot += (Math.round(findDistance(A,B)))/1000;
