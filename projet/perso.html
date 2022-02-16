@@ -17,25 +17,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
     <div id="app">
-		<p id="infos" class="info">INFOS</p></br>
+		<p id="info" class="info">INFOS</p></br>
 		<div id="buttons">
 			<button id="center" class="button" onclick="myPosition()">Recentrer</button>     
 			<button id="start" class="button" onclick="onStart()">Démarrer</button>     
 			<button id="stop" class="button" onclick="onStop()">Arrêter</button>
 			<button id="stat" class="button" onclick="myPerf()">Statistiques</button>
 		</div>
-		<!-- <p id="infos">
+	</br></br>
+	<!-- ------------------------------------------------------------------------------------------- -->
+		<div id="infoStartStop">
 			<p id="startInfo" class="info">START</p>	 
-			<p id="lastInfo" class="info">TEMP</p>    
 			<p id="stopInfo" class="info">STOP</p>  
-		</p>
-			<p id="data" class="info">STATS</p>	</br> 
-		</div> -->
+		</div>
+	</br></br>
+	<!-- ------------------------------------------------------------------------------------------- -->
     	<div  id = "map"> </div>
+	</br></br>
 	</div>
 
     <script>
-        var infos = document.getElementById('infos');
+		var startInfo = document.getElementById('startInfo');
+		var stopInfo = document.getElementById('stopInfo');
+        var info = document.getElementById('info');
 		let center = document.getElementById('center');
 		let start = document.getElementById('start');
         let stop = document.getElementById('stop');
@@ -80,52 +84,63 @@
 	// icon on coordinates and show info 
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
-			infos.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
+			info.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
 			currentP = pos.coords;
+
+			// if (start.disabled = true){
+			// //center on my position	and zoom		
+			// 	myPosition(20);
+			// 	console.log("START OK");
+			// 	if (findDistance(lastP,currentP) > 0.005) { //5m
+			// 		console.log("distance entre deux points supérieure à 5m")
+			// 	// //Show path
+			// 	// 	drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
+			// 	// 	//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
+			// 	// // //update distances
+			// 	// // 	distanceTot += (Math.round(findDistance(A,B)))/1000;
+			// 	// // 	if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+			// 	// // 	if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+			// 	// //Change old coordinate to new for next operation 
+			// 	// 	lastP = currentP;
+			// 	console.log("lastP");
+			// 	console.log(lastP);
+			// 	console.log("currentP");
+			// 	console.log(currentP);
+			// 	}
+			// }
 		});
 
-//Center button
+//Center map on position
 		function myPosition(zoom) {
 			if (zoom == null) {zoom =18;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
-			infos.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br> "+ currentP.accuracy +"(ac)   -   "+ currentP.altitudeAccuracy +"(alt ac)." ;
+			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br> "+ currentP.accuracy +"(ac)   -   "+ currentP.altitudeAccuracy +"(alt ac)." ;
 		}
     
 //Start button : track walking
 		function onStart(){
 			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
-			//startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
+	//<!-- ------------------------------------------------------------------------------------------- -->
+			startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
+	//<!-- ------------------------------------------------------------------------------------------- -->
 			stop.disabled = false;
 			start.disabled = true;
 			center.disabled = true;
-			//data.innerHTML = ""; -----------
 			distanceTot = 0;
 			altitudeMax = startP.altitude;
 			altitudeMin = startP.altitude;
 		//show starting point
 			drawPoint([startP.longitude, startP.latitude], 5, '#FF0000'); // medium red starting point
-			lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};
-		//center on my position			
-            myPosition(20); //---------------------
-
-			//if (findDistance(lastP,currentP) > 0.001) { //1m
-			//Show path
-				drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
-				//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
-			//update distances
-				distanceTot += Math.round(findDistance(A,B)/1000);
-				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
-				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-			//Change old coordinate to new for next operation 
-				lastP = currentP;
-			//}
+			lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};	
 		}
 
 //Stop button : finish walking and edit stats
 		function onStop(){
 			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
-			//stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
+	//<!-- ------------------------------------------------------------------------------------------- -->
+			stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
+	//<!-- ------------------------------------------------------------------------------------------- -->
 			stat.disabled = false;
 			stop.disabled = true;
 			start.disabled = false;
@@ -143,7 +158,7 @@
 
 //Stats button
 		function myPerf() {
-			infos.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax-altitudeMin)+").";
+			info.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax-altitudeMin)+").";
 		}
 
 //Compass orientation        
@@ -190,18 +205,17 @@
 
 //Distance between two points
 		function findDistance(A,B) {
-			var earthRadius = 6371e3; // R is earth’s radius
-			var latA = A.latitude;
-			var latB = B.latitude;
-			var lonA = A.longitude;
-			var lonB = B.longitude;
-			var latAradians = (latA)*Math.PI/180;
-			var latBradians = (latB)*Math.PI/180;
-			var latRadians = (latB-latA)*Math.PI/180;
-			var lonRadians = (lonB-lonA)*Math.PI/180;
-			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
-			var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-			var distance = earthRadius * y;
+			let latA = A.latitude;
+			let latB = B.latitude;
+			let lonA = A.longitude;
+			let lonB = B.longitude;
+			let latAradians = (latA)*Math.PI/180;
+			let latBradians = (latB)*Math.PI/180;
+			let latRadians = (latB-latA)*Math.PI/180;
+			let lonRadians = (lonB-lonA)*Math.PI/180;
+			let x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+			let y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+			let distance = y * 6371e3; // earth’s radius;
 			return distance;
 		}
 
