@@ -87,27 +87,27 @@
 			info.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
 			currentP = pos.coords;
 
-			// if (start.disabled = true){
-			// //center on my position	and zoom		
-			// 	myPosition(20);
-			// 	console.log("START OK");
-			// 	if (findDistance(lastP,currentP) > 0.005) { //5m
-			// 		console.log("distance entre deux points supérieure à 5m")
-			// 	// //Show path
-			// 	// 	drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
-			// 	// 	//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
-			// 	// // //update distances
-			// 	// // 	distanceTot += (Math.round(findDistance(A,B)))/1000;
-			// 	// // 	if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
-			// 	// // 	if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-			// 	// //Change old coordinate to new for next operation 
-			// 	// 	lastP = currentP;
-			// 	console.log("lastP");
-			// 	console.log(lastP);
-			// 	console.log("currentP");
-			// 	console.log(currentP);
-			// 	}
-			// }
+			if (start.disabled == true){
+			//center on my position	and zoom		
+				myPosition(20);
+				console.log("START OK");
+				if (findDistance(lastP,currentP) > 0.005) { //5m
+					console.log("distance entre deux points supérieure à 5m")
+				// //Show path
+				// 	drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
+				// 	//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
+				// // //update distances
+				// // 	distanceTot += (Math.round(findDistance(A,B)))/1000;
+				// // 	if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+				// // 	if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+				// //Change old coordinate to new for next operation 
+				// 	lastP = currentP;
+				console.log("lastP");
+				console.log(lastP);
+				console.log("currentP");
+				console.log(currentP);
+				}
+			}
 		});
 
 //Center map on position
