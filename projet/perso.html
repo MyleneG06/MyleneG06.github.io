@@ -79,7 +79,7 @@
 	// icon on coordinates and show info 
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
-			currentInfo.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + pos.coords.altitude + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
+			currentInfo.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
 			currentP = pos.coords;
 		});
 
@@ -95,7 +95,7 @@
     
 //Start button : track walking
 		function onStart(){
-			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};
+			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
 			startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
 			stop.disabled = false;
 			start.disabled = true;
@@ -110,22 +110,22 @@
 		//center on my position			
             myPosition(20); //---------------------
 
-		// 	if (findDistance(lastP,currentP)/1000 > 10) {
-		// //Show path
-		// 		drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
-		// 		drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
-		// //update distances
-		// 		distanceTot += Math.round(findDistance(A,B)/1000);
-		// 		if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
-		// 		if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-		// //Change old coordinate to new for next operation 
-		// 		lastP = currentP;
-		//	}
+			if (findDistance(lastP,currentP)/1000 > 2) {
+			//Show path
+				drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
+				drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
+			//update distances
+				distanceTot += Math.round(findDistance(A,B)/1000);
+				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+			//Change old coordinate to new for next operation 
+				lastP = currentP;
+			}
 		}
 
 //Stop button : finish walking and edit stats
 		function onStop(){
-			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};
+			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
 			stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
 			stop.disabled = true;
 			start.disabled = false;
