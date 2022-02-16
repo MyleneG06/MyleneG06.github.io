@@ -88,26 +88,33 @@
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
 			//info.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
 			currentP = pos.coords;
-		//if walking : zoom, center on my position and zoom check altitudes min/max
+		//if walking : zoom on my position, zoom check altitudes min/max
 			if (start.disabled == true){
-				
-				// console.log("START OK");
-				dataInfo.innerHTML = "DATA : </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
-			// ----------------------------------------------------------------------------------------
+// console.log("START OK");
+dataInfo.innerHTML = "DATA : </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
+// ----------------------------------------------------------------------------------------
 				zoomOnPosition(20);
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-			//step bigger than accuracy
-				if (findDistance(lastP,currentP) > currentP.accuracy) { 
-					dataInfo.innerHTML += "</br>distance entre deux points supérieure à la précision";
-				//Show path
+			//every 10' : show path and calculate distance
+				const myTimeout = setTimeout(() => {
+					dataInfo.innerHTML += " +10sec "; //----------------------
 					drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 					//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
-				//calculate distance
 					distanceTot += (Math.round(findDistance(A,B)))/1000;
-				//Change old coordinate to new for next operation 
-					lastP = currentP;
-				}
+					lastP = currentP; //Change old coordinate to new for next operation 
+				}, 10000);
+				//step bigger than accuracy
+				// if (findDistance(lastP,currentP) > currentP.accuracy) { 
+				// 	dataInfo.innerHTML += "</br>distance entre deux points supérieure à la précision";
+				// //Show path
+				// 	drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
+				// 	//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
+				// //calculate distance
+				// 	distanceTot += (Math.round(findDistance(A,B)))/1000;
+				// //Change old coordinate to new for next operation 
+				// 	lastP = currentP;
+				// }
 			}
 		});
 
