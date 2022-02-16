@@ -92,13 +92,13 @@
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//every 20' : calculate distance and track steps
 				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP) > 50) { //----------------------------------------------------------
+					if (findDistance(lastP,currentP) > 20) { //----------------------------------------------------------
 						drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
-						distanceTot += (Math.round(findDistance(A,B)))/1000;
-						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};//Change old coordinate to new for next operation
+						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
 					}
-					dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " +altitudeMin+" et " +altitudeMax + " d'altitude";
+					distanceTot += (Math.round(findDistance(A,B)))/1000;
+					dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " +Math.round(altitudeMin)+" et " +Math.round(altitudeMax) + " d'altitude";
 				}, 20000);			 
 			}
 		});
@@ -139,7 +139,7 @@
 			distanceTot += (Math.round(findDistance(endP, lastP)))/1000;
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
-			dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " +altitudeMin+" et " +altitudeMax + " d'altitude";
+			dataInfo.innerHTML = "Distance parcourue : " + distanceTot*1000 +"(m)   -   entre " + Math.round(altitudeMin) +" et " + Math.round(altitudeMax) + " d'altitude";
 		//zoom out to show path
 			zoomOnPosition(16); //---------------------
 		}
