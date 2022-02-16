@@ -114,9 +114,8 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 			altitudeMax = startP.altitude;
 			altitudeMin = startP.altitude;
 			drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
-			var lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};
-			console.log("lastP (=start)"); //---------------------------------------------------
-			console.log(lastP); //---------------------------------------------------
+			lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};
+			
 	
 	// 		// 	if (findDistance(lastP,currentP)/1000 > 10) {
 	// 		// //Show path
@@ -129,8 +128,9 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 	// 		// //Change old coordinate to new for next operation 
 	// 		// 		lastP = currentP;
 
-	console.log("start"); //---------------------------------------------------
-           
+
+	console.log("lastP START"); //---------------------------------------------------
+			console.log(lastP); //---------------------------------------------------
 		}
 
 //stop walking and edit stats
@@ -141,9 +141,11 @@ window.addEventListener("deviceorientation", handleOrientation, true);
 			start.disabled = false;
 		// show last step
 			drawPoint([endP.longitude, endP.latitude], 20, '#FF0000'); // big red ending point
-			//drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
+			console.log("lastP STOP"); //---------------------------------------------------
+			console.log(lastP); //---------------------------------------------------
+			drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
 		//update distances
-			//distanceTot += Math.round(findDistance(endP, lastP)/1000);
+			distanceTot += Math.round(findDistance(endP, lastP)/1000);
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 			stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
