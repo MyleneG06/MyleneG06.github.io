@@ -98,7 +98,7 @@
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//step bigger than accuracy
-				if (findDistance(lastP,currentP)*1000 > currentP.accuracy) { 
+				if (findDistance(lastP,currentP)*100 > currentP.accuracy) { 
 					dataInfo.innerHTML += "</br>distance entre deux points supérieure à la précision";
 				//Show path
 					drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
