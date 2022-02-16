@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Test 0.05</title>
+    <title>Test step20</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -63,8 +63,8 @@
         const view = new ol.View({center: [10,10], zoom: 0, projection: 'EPSG:4326'}); //------------------------------------------------
         const layers = [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer];
         const map = new ol.Map({ layers: layers, target: 'map', view: view,});
-        const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
-        geolocation.setTracking(1);   
+        //const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
+        //geolocation.setTracking(1);   
 	//compass icon
         const iconCar = new ol.Feature({ name: 'Null Island', population: 4000, rainfall: 500, size: [5, 5],});
         const iconStyle = new ol.style.Style({
@@ -98,7 +98,7 @@
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//every 10' : calculate distance
 				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP) > 5) {
+					if (findDistance(lastP,currentP) > 20) {
 						drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 						//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
 						distanceTot += (Math.round(findDistance(A,B)))/1000;
