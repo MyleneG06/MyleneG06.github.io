@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>tracking distance step20</title>
+    <title>tracking distance step10</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -98,7 +98,7 @@
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
 			//every 20' : calculate distance
 				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP)/1000 > 20) {
+					if (findDistance(lastP,currentP)/1000 > 10) {
 						drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 						//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
 						distanceTot += (Math.round(findDistance(A,B)))/1000;
