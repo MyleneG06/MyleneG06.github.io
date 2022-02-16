@@ -19,7 +19,7 @@
     <div id="app">
 		<p id="info" class="info">INFOS</p></br>
 		<div id="buttons">
-			<button id="center" class="button" onclick="myPosition()">Recentrer</button>     
+			<button id="position" class="button" onclick="zoomOnPosition()">Ma position</button>     
 			<button id="start" class="button" onclick="onStart()">Démarrer</button>     
 			<button id="stop" class="button" onclick="onStop()">Arrêter</button>
 			<button id="stat" class="button" onclick="myPerf()">Statistiques</button>
@@ -42,7 +42,7 @@
 		var startInfo = document.getElementById('startInfo');
 		var stopInfo = document.getElementById('stopInfo');
         var info = document.getElementById('info');
-		let center = document.getElementById('center');
+		let position = document.getElementById('position');
 		let start = document.getElementById('start');
         let stop = document.getElementById('stop');
         stop.disabled = true;
@@ -83,39 +83,36 @@
 	//update map orientation
 		window.addEventListener("deviceorientation", handleOrientation, true);
 		
-	// icon on coordinates and show info 
+	//icon on coordinates and show info 
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
 			//info.innerHTML = "POSITION : " + pos.coords.latitude + "(lat) - " + pos.coords.longitude + "(lon) - " + Math.round(pos.coords.altitude) + "(m) </br> "+ pos.coords.accuracy +"(ac)   -   "+ pos.coords.altitudeAccuracy +"(alt ac)." ;
 			currentP = pos.coords;
-
+		//if walking : zoom, center on my position and zoom check altitudes min/max
 			if (start.disabled == true){
-			//center on my position	and zoom		
-				myPosition(20);
-				console.log("START OK");
-				dataInfo.innerHTML = "DATA : </br> currentP :" + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
-
-				if (findDistance(lastP,currentP) > 0.005) { //5m
-					dataInfo.innerHTML += "</br>distance entre deux points supérieure à 5m";
+				
+				// console.log("START OK");
+				dataInfo.innerHTML = "DATA : </br> lastP :" + lastP.latitude + "(lat) - " + lastP.longitude + "(lon) - " + Math.round(lastP.altitude) + "(m)";
+			// ----------------------------------------------------------------------------------------
+				zoomOnPosition(20);
+				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+			//step bigger than accuracy
+				if (findDistance(lastP,currentP) > currentP.accuracy*1000) { 
+					dataInfo.innerHTML += "</br>distance entre deux points supérieure à la précision";
 				//Show path
 					drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
 					//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
-				// //update distances
-				// 	distanceTot += (Math.round(findDistance(A,B)))/1000;
-				// 	if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
-				// 	if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+				//calculate distance
+					distanceTot += (Math.round(findDistance(A,B)))/1000;
 				//Change old coordinate to new for next operation 
 					lastP = currentP;
-				console.log("lastP");
-				console.log(lastP);
-				console.log("currentP");
-				console.log(currentP);
 				}
 			}
 		});
 
 //Center map on position
-		function myPosition(zoom) {
+		function zoomOnPosition(zoom) {
 			if (zoom == null) {zoom =18;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
@@ -130,7 +127,7 @@
 	//<!-- ------------------------------------------------------------------------------------------- -->
 			stop.disabled = false;
 			start.disabled = true;
-			center.disabled = true;
+			position.disabled = true;
 			distanceTot = 0;
 			altitudeMax = startP.altitude;
 			altitudeMin = startP.altitude;
@@ -148,7 +145,7 @@
 			stat.disabled = false;
 			stop.disabled = true;
 			start.disabled = false;
-			center.disabled = false;
+			position.disabled = false;
 		// show last step
 			drawPoint([endP.longitude, endP.latitude], 10, '#FF0000'); // big red ending point
 			//drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]); //-----------------------------------------------
@@ -157,7 +154,7 @@
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 		//zoom out to show path
-			myPosition(16); //---------------------
+			zoomOnPosition(16); //---------------------
 		}
 
 //Stats button
