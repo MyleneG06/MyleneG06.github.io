@@ -24,9 +24,10 @@
 			<button id="stop" class="button" onclick="onStop()">Arrêter</button>
 		</div>
 		<div id="infos">
-			<p id="startInfo" class="info">START</p>	
+			<!-- <p id="startInfo" class="info">START</p>	 -->
 			<p id="lastInfo" class="info">TEMP</p>    
-			<p id="stopInfo" class="info">STOP</p> </br>
+			<!-- <p id="stopInfo" class="info">STOP</p>  -->
+		</br>
 			<p id="stats" class="info">STATS</p>	</br>
 		</div>
     	<div  id = "map"> </div>
@@ -36,9 +37,9 @@
     <script>
         var currentInfo = document.getElementById('currentInfo');
         let start = document.getElementById('start');
-        let startInfo = document.getElementById('startInfo');
+        //let startInfo = document.getElementById('startInfo');
         let stop = document.getElementById('stop');
-        let stopInfo = document.getElementById('stopInfo');
+        //let stopInfo = document.getElementById('stopInfo');
         let stats = document.getElementById('stats');
 
 	//initialize data
@@ -96,7 +97,7 @@
 //Start button : track walking
 		function onStart(){
 			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
-			startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
+			//startInfo.innerHTML = "DEPART : " + startP.latitude + "(lat) - " + startP.longitude + "(lon) - " + startP.altitude + "(m)" ;
 			stop.disabled = false;
 			start.disabled = true;
 			center.disabled = true;
@@ -110,10 +111,10 @@
 		//center on my position			
             myPosition(20); //---------------------
 
-			if (findDistance(lastP,currentP)/1000 > 2) {
+			if (findDistance(lastP,currentP) > 0.001) { //1m
 			//Show path
 				drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
-				drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
+				//drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
 			//update distances
 				distanceTot += Math.round(findDistance(A,B)/1000);
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
@@ -126,7 +127,7 @@
 //Stop button : finish walking and edit stats
 		function onStop(){
 			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
-			stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
+			//stopInfo.innerHTML = "ARRIVEE : " + endP.latitude + "(lat) - " + endP.longitude + "(lon) - " + endP.altitude + "(m)" ;
 			stop.disabled = true;
 			start.disabled = false;
 			center.disabled = false;
