@@ -88,7 +88,7 @@
 					}
 					distanceTot += findDistance(endP, lastP);
 				}, 10000);
-			    info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(alt) </br>DISTANCE : " + Math.round(distanceTot);
+			    info.innerHTML += Math.round(distanceTot) + "m";
 			}
 		});
 
@@ -97,6 +97,7 @@
 			if (zoom == null) {zoom =19;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
+			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(alt)";
 		}
     
 //Start button : track walking
@@ -136,7 +137,7 @@
 			stat.disabled = true;
 			var unite = "m";
 			if (distanceTot >= 1000) {unite = "km"}
-			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax)-Math.round(altitudeMin) +" m).";
+			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ (Math.round(altitudeMax)-Math.round(altitudeMin)) +" m).";
 		}
 
 //Compass orientation        
