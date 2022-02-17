@@ -3,9 +3,10 @@
   <head>
     <title>DorAdventure</title>
     <style>
-        html,body,#map { width:100%; height:100%; margin:0; }
-        #map {position: absolute; z-index: 5;}
-		.button {width: 150px; height: 50px; font-size: 20px;}
+        #app { width:100%; height:100%; margin:0; }
+        #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
+		.button {font-size:xx-large}
+		.info {font-size:large;}
     </style>
 
   </head>
@@ -15,40 +16,45 @@
     <link href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    
-<!-- INFOS COORDONNINATES -->
-    <label>Latitude : </label><span id="latitude"></span>        </br>
-    <label>Longitude : </label><span id="longitude"></span>      </br>        
-    <label>Altitude : </label><span id="altitude"></span>      </br>
-    <label>Précision : </label><span id="accuracy"></span>  </br></br>
-<!-- BUTTONS WALKING -->
-    <button id="start" class="button">Démarrer</button><p id="startInfo"></p>	
-	</br><p id="stopInfo"></p>	    <button id="stop" class="button">Arrêter</button> </br></br>
-    <p id="stats"></p>	</br>
-<!-- MAP -->
-    <div  id = "map"> </div>
+    <div id="app">
+		<p id="info" class="info">INFOS</p></br>
+		<div id="buttons">
+			<button id="position" class="button" onclick="zoomOnPosition()">Ma position</button>     
+			<button id="start" class="button" onclick="onStart()">Démarrer</button>     
+			<button id="stop" class="button" onclick="onStop()">Arrêter</button>
+			<button id="stat" class="button" onclick="myPerf()">Statistiques</button>
+		</div>
+	</br></br>
+    	<div  id = "map"> </div>
+	</br></br>
+	</div>
 
     <script>
-        var latitude = document.getElementById('latitude');
-        var longitude = document.getElementById('longitude');
-        var altitude = document.getElementById('altitude');
-        let start = document.getElementById('start');
-        let startInfo = document.getElementById('startInfo');
+        var info = document.getElementById('info');
+		let position = document.getElementById('position');
+		let start = document.getElementById('start');
         let stop = document.getElementById('stop');
-        let stopInfo = document.getElementById('stopInfo');
-        let stats = document.getElementById('stats');
-
-//initialize data and show map
-        var rota_;
+        stop.disabled = true;
+		let stat = document.getElementById('stat');
+        stat.disabled = true;
+	//declare global data
+		let startP;
+		let endP;
+		var currentP;
+		var lastP;
+		var distanceTot;
+		var altitudeMax;
+		var altitudeMin;
+		var rota_;
+	//show map
         var vectorSource = new ol.source.Vector();
         vectorLayer = new ol.layer.Vector({source: vectorSource});
-        const view = new ol.View({center: [10,10], zoom: 20, projection: 'EPSG:4326'});
+        const view = new ol.View({center: [10,10], zoom: 0, projection: 'EPSG:4326'}); 
         const layers = [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer];
         const map = new ol.Map({ layers: layers, target: 'map', view: view,});
         const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
         geolocation.setTracking(1);   
-
-//compass icon
+	//compass icon
         const iconCar = new ol.Feature({ name: 'Null Island', population: 4000, rainfall: 500, size: [5, 5],});
         const iconStyle = new ol.style.Style({
             image: new ol.style.Icon({
@@ -63,74 +69,82 @@
         iconCar.setStyle(iconStyle);
         new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [iconCar],}),});
 
-//update map orientation  
-window.addEventListener("deviceorientation", handleOrientation, true);
+	//update map orientation
+		window.addEventListener("deviceorientation", handleOrientation, true);
 		
-// Center map on coordinates + icon + show latlon 
+	//icon on coordinates 
         navigator.geolocation.watchPosition(function(pos) {
-            document.getElementById('accuracy').innerHTML = pos.coords.accuracy
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
-            latitude.innerHTML = pos.coords.latitude;
-            longitude.innerHTML = pos.coords.longitude;
-            if(pos.coords.altitude != null) {altitude.innerHTML = pos.coords.altitude;}
-            view.setCenter([pos.coords.longitude, pos.coords.latitude]);
-            
-	//Start walking     
-            start.addEventListener("click",function(){
-                stop.disabled = false;
-                start.disabled = true;
-				stats.innerHTML = "";
-				stopInfo.innerHTML = "";
-                var distanceTot = 0;
-                const startP = pos.coords;
-                console.log("start point : "); ////////////
-                console.log(startP); ////////////
-                var altitudeMax = startP.altitude;
-                var altitudeMin = startP.altitude;
-                startInfo.innerHTML = "DEPART : " + startP.altitude + "(m d'altitude) - " + startP.latitude + "(lat) - " + startP.longitude + "(lon)";
-				drawPoint([startP.longitude, startP.latitude], 4, '#FF0000'); // medium red starting point
-			    //var lastP = startP;
-			// 	var currentP = pos.coords;
-			// 	if (findDistance(lastP,currentP)/1000 > 10) {
-			// //Show path
-			// 		drawPoint([currentP.longitude, currentP.latitude], 2, '#0000FF'); // little blue walking point
-			// 		drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]);
-			// //update distances
-			// 		distanceTot += Math.round(findDistance(A,B)/1000);
-			// 		if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
-			// 		if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-			// //Change old coordinate to new for next operation 
-			// 		lastP = currentP;
-                //}
-
-    //Stop walking and edit stats
-                stop.addEventListener("click",function(lastP){
-                    stop.disabled = true;
-                    start.disabled = false;
-                    const endP = pos.coords;
-                    console.log("end point : "); ////////////
-                    console.log(endP); ////////////
-                    stopInfo.innerHTML = "ARRIVEE : " + endP.altitude + "(m d'altitude) - " + endP.latitude + "(lat) - " + endP.longitude + "(lon)";
-                // show last step
-                    drawPoint([endP.longitude, endP.latitude], 20, '#FF0000'); // big red ending point
-                    //drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]);
-                // //update distances
-                    // distanceTot += Math.round(findDistance(endP, lastP)/1000);
-            		// if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
-            		// if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
-                    stats.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + altitudeMin + " et " + altitudeMax +"</br>(soit un dénivelé de : "+ (altitudeMax-altitudeMin)+").";
-                });
-            });
+			currentP = pos.coords;
+			if (start.disabled == true){//if walking : zoom on my position, zoom check altitudes min/max
+				zoomOnPosition(20);
+				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
+				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
+				const myTimeout = setTimeout(() => {//every 10' : calculate distance and track steps bigger than 10m
+					if (findDistance(lastP,currentP) > 10) { 
+						drawPoint([currentP.longitude, currentP.latitude], 5, '#0000FF'); // little blue walking point
+						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
+						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
+					}
+					distanceTot += findDistance(endP, lastP);
+				}, 10000);			 
+			}
 		});
 
+//Center map on position
+		function zoomOnPosition(zoom) {
+			if (zoom == null) {zoom =19;}
+			view.setZoom(zoom);
+			view.setCenter([currentP.longitude, currentP.latitude]);
+			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br>DISTANCE : " + Math.round(distanceTot);
+		}
     
+//Start button : track walking
+		function onStart(){
+			startP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
+			stop.disabled = false;
+			start.disabled = true;
+			position.disabled = true;
+			distanceTot = 0;
+			altitudeMax = startP.altitude;
+			altitudeMin = startP.altitude;
+		//show starting point
+			drawPoint([startP.longitude, startP.latitude], 10, '#FF0000'); // medium red starting point
+			lastP = {latitude : startP.latitude, longitude : startP.longitude, altitude: startP.altitude};	
+		}
 
-//compass        
+//Stop button : finish walking and edit stats
+		function onStop(){
+			endP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: Math.round(currentP.altitude)};
+			stat.disabled = false;
+			stop.disabled = true;
+			start.disabled = false;
+			position.disabled = false;
+		// show last step
+			drawPoint([endP.longitude, endP.latitude], 15, '#FF0000'); // big red ending point
+			drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]); 
+		//update stats
+			distanceTot += findDistance(endP, lastP);
+			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
+			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
+		//zoom out to show path
+			zoomOnPosition(18); 
+		}
+
+//Stats button
+		function myPerf() {
+			stat.disabled = true;
+			var unite = "m";
+			if (distanceTot >= 1000) {unite = "km"}
+			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax)-Math.round(altitudeMin) +" m).";
+		}
+
+//Compass orientation        
         function compassHeading(alpha, beta, gamma) {
             var alphaRad = -alpha * (Math.PI / 180);
             var betaRad = beta * (Math.PI / 180);
             var gammaRad = gamma * (Math.PI / 180);
-            betaRad = 1.5707963268;
+            betaRad = 1.5707963268; //-----------------------------------
             var cA = Math.cos(alphaRad);
             var sA = Math.sin(alphaRad);
             var cB = Math.cos(betaRad);
@@ -149,7 +163,7 @@ window.addEventListener("deviceorientation", handleOrientation, true);
             return compassHeading;
         }
 
-//update map when compass orientation changes 
+//Update map on compass
         function handleOrientation(event) {
             absolute = event.absolute;
             alpha    = event.alpha;
@@ -157,57 +171,50 @@ window.addEventListener("deviceorientation", handleOrientation, true);
             gamma    = event.gamma;
             if(isNaN(rota_)) {
                 rota_ = compassHeading(alpha, beta, gamma);
-                //iconStyle.getImage().setRotateWithView(1);
+				//iconStyle.getImage().setRotateWithView(1); //-----------
+				iconStyle.getImage().setRotation(rota_); //-----------------------------------
             }else{
                 eski_yon = rota_;
                 rota_ = compassHeading(alpha, beta, gamma);   
             }
             if(rota_ != null && !isNaN(rota_)) {
-                //iconStyle.getImage().setRotateWithView(0);
                 map.getView().setRotation(rota_);
+				//iconStyle.getImage().setRotateWithView(0); //-----------
             }
-            view.setCenter([longitude.innerHTML,latitude.innerHTML]);
         }
 
 //Distance between two points
 		function findDistance(A,B) {
-			var R = 6371e3; // R is earth’s radius
-			var latA = A.latitude;
-			var latB = B.latitude;
-			var lonA = A.longitude;
-			var lonB = B.longitude;
-			var latAradians = (latA)*Math.PI/180;
-			var latBradians = (latB)*Math.PI/180;
-			var latRadians = (latB-latA)*Math.PI/180;
-			var lonRadians = (lonB-lonA)*Math.PI/180;
-			var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
-			var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-			var distance = R * y;
+			let latA = A.latitude;
+			let latB = B.latitude;
+			let lonA = A.longitude;
+			let lonB = B.longitude;
+			let latAradians = (latA)*Math.PI/180;
+			let latBradians = (latB)*Math.PI/180;
+			let latRadians = (latB-latA)*Math.PI/180;
+			let lonRadians = (lonB-lonA)*Math.PI/180;
+			let x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
+			let y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+			let distance = y * 6371e3; // earth’s radius;
 			return distance;
 		}
 
-//Draw  ---------------------------------------------------------------------------------------------------------------
-		// drawPoint([7.289429, 43.675819], 8, '#FF0000'); // big red point
-		// drawPoint([7.0736057, 43.5976677], 3, '#0000FF'); // little blue point
-		function drawPoint(coordP, radiusP, colorP)
-		{
+//Draw  
+		function drawPoint(coordP, radiusP, colorP){
 			var pointStroke = new ol.style.Stroke({color: colorP ,width: 1});
 			var pointFill = new ol.style.Fill({color: colorP});
 			var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: radiusP});
 			var style = new ol.style.Style({image: circle});
-
 			var pointFeature = new ol.Feature({});
-
 			pointFeature.setStyle(style);
 			new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
 			pointFeature.setGeometry(coordP ? new ol.geom.Point(coordP) : null);
 		}
 
-		// drawLine([[7.0736057, 43.5976677],[7.289429, 43.675819]]); // thin black line
 		function drawLine(coordsList) {
 			var line = new ol.geom.LineString(coordsList);
 			var lineStyle= new ol.style.Style({
-				stroke: new ol.style.Stroke({color: '#000000',width: 1})
+				stroke: new ol.style.Stroke({color: '#0000FF',width: 3})
 			});
 			var lineFeature = new ol.Feature({
 				geometry: line

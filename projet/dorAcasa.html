@@ -8,23 +8,30 @@
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
 		crossorigin=""/> <!-- leaflet-step1 -->
 	</head>
-	<body>         
-<!-- INFOS COORDONNEES -->
-        <label>Latitude : </label><span id="latitude"></span>        </br>
-        <label>Longitude : </label><span id="longitude"></span>      </br>        
-        <label>Altitude : </label><span id="altitude"></span>      </br></br>
-<!-- RAYON -->
-        <input id="saisieRayon" placeholder="rayon en km" />
-        <button id="validRayon">Valider</button></br> </br>
-<!-- INFOS API -->
-        <label>Région : </label><text id="region"></text>        </br>
-        <label>Département : </label><text id="departement"></text>        </br>
-        <label>Commune : </label><text id="commune"></text>        </br>
-        <label>Population : </label><text id="population"></text>        </br>
-        <label>Surface : </label><text id="surface"></text>        </br></br>
-<!-- CARTE -->
-        <div id="map"></div>
-        <style>#map { height: 100vh; }</style>		
+	<body>  
+        <div class="app">
+    <!-- INFOS COORDONNEES -->
+            <label class="info">Latitude : </label><span id="latitude" class="info"></span>        </br>
+            <label class="info">Longitude : </label><span id="longitude" class="info"></span>      </br>        
+            <label class="info">Altitude : </label><span id="altitude" class="info"></span>      </br></br>
+    <!-- RAYON -->
+            <input id="saisieRayon" placeholder="rayon en km" />
+            <button id="validRayon" class="button">Valider</button></br> </br>
+    <!-- INFOS API -->
+            <label class="info">Région : </label><text class="info" id="region"></text>        </br>
+            <label class="info">Département : </label><text class="info" id="departement"></text>        </br>
+            <label class="info">Commune : </label><text class="info" id="commune"></text>        </br>
+            <label class="info">Population : </label><text class="info" id="population"></text>        </br>
+            <label class="info">Surface : </label><text class="info" id="surface"></text>        </br></br>
+    <!-- CARTE -->
+            <div id="map"></div>
+        </div> 
+        <style>
+            #app { width:100%; height:100%; margin:0; }
+            #map { height: 100vh; } /* ----------- */
+            .button {font-size:xx-large}
+            .info {font-size:large;}
+        </style>	
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
