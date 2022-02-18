@@ -2,13 +2,8 @@
 <html>
   <head>
     <title>DorAventura</title>
-    <style>
-        #app { width:100%; height:100%; margin:0; }
-        #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
-		.button {font-size:xx-large}
-		.info {font-size:large;}
-    </style>
-
+	<meta charset="utf-8"/>	
+	<link rel="stylesheet" href="myStyle.css"/>
   </head>
   
   <body>
@@ -79,9 +74,9 @@
                 info.innerHTML += "</br>DISTANCE PARCOURUE : " + Math.round(distanceTot) + " m.";
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-            //calculate distance and track steps bigger than 10m
+            //calculate distance and track steps bigger than 5m
             var distance = findDistance(lastP,currentP);
-                if (distance > 10) { 
+                if (distance > 5) { 
                     drawPoint([currentP.longitude, currentP.latitude], 5, '#0000FF'); // little blue walking point
                     drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
                     distanceTot += distance;

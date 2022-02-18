@@ -7,35 +7,24 @@
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
 		crossorigin=""/> <!-- leaflet-step1 -->
+		<link rel="stylesheet" href="myStyle.css"/>
 	</head>
 	<body>  
         <div class="app">
-    <!-- INFOS COORDONNEES -->
-            <label class="info">Latitude : </label><span id="latitude" class="info"></span>        </br>
-            <label class="info">Longitude : </label><span id="longitude" class="info"></span>      </br>        
-            <label class="info">Altitude : </label><span id="altitude" class="info"></span>      </br></br>
+    <!-- INFOS COORDONNEES / API -->
+            <p id="position" class="info"></p>
+            <p id="infos" class="info"></p>
+            <span id="latitude" class="info" hidden></span></br><span id="longitude" class="info" hidden></span>             
     <!-- RAYON -->
             <input id="saisieRayon" placeholder="rayon en km" />
             <button id="validRayon" class="button">Valider</button></br> </br>
-    <!-- INFOS API -->
-            <label class="info">Région : </label><text class="info" id="region"></text>        </br>
-            <label class="info">Département : </label><text class="info" id="departement"></text>        </br>
-            <label class="info">Commune : </label><text class="info" id="commune"></text>        </br>
-            <label class="info">Population : </label><text class="info" id="population"></text>        </br>
-            <label class="info">Surface : </label><text class="info" id="surface"></text>        </br></br>
     <!-- CARTE -->
             <div id="map"></div>
         </div> 
-        <style>
-            #app { width:100%; height:100%; margin:0; }
-            #map { height: 100vh; } /* ----------- */
-            .button {font-size:xx-large}
-            .info {font-size:large;}
-        </style>	
+	
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
-
 
         <script>
 
@@ -50,12 +39,13 @@
                 }).addTo(map);
 
 // Affichage de la position (avec altitude si accessible)
+                document.getElementById('position').innerHTML = "POSITION : </br>" + crd1.latitude +"(lat) - " + crd1.longitude + "(lon)";
                 var msg = 'vous êtes ici';
-                document.getElementById('latitude').innerHTML = crd1.latitude;
-                document.getElementById('longitude').innerHTML = crd1.longitude;
+                document.getElementById('latitude').innerHTML = crd1.latitude; 
+                document.getElementById('longitude').innerHTML = crd1.longitude; 
                 if(crd1.altitude != null) {
                     msg = 'vous êtes ici à une altitude de ' + crd1.altitude + 'm.';
-                    document.getElementById('altitude').innerHTML = crd1.altitude;
+                    document.getElementById('position').innerHTML += " - " + crd1.altitude +"(alt).";
                 }
                 L.marker([crd1.latitude, crd1.longitude]).addTo(map)
                     .bindPopup(msg)
@@ -76,11 +66,7 @@
 
                 function reqListener () {
                     L.geoJson(JSON.parse(this.response)).addTo(map);
-                    document.getElementById('region').innerHTML = JSON.parse(this.response).features[0].properties.region.nom;
-                    document.getElementById('departement').innerHTML = JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ").";
-                    document.getElementById('commune').innerHTML = JSON.parse(this.response).features[0].properties.nom;
-                    document.getElementById('population').innerHTML = JSON.parse(this.response).features[0].properties.population + " habitants.";
-                    document.getElementById('surface').innerHTML = JSON.parse(this.response).features[0].properties.surface + " m2.";
+                    document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
                 }
                 var oReq = new XMLHttpRequest();
                 oReq.addEventListener("load", reqListener);
@@ -92,8 +78,9 @@
                     var latitude2 = e.latlng.lat;
                     var longitude2 = e.latlng.lng
                     var msg2 = 'point choisi';
+                    document.getElementById('position').innerHTML = "POSITION : </br>" + latitude2 +"(lat) - " + longitude2 + "(lon)";
                     document.getElementById('latitude').innerHTML = latitude2;
-                    document.getElementById('longitude').innerHTML = longitude2;      
+                    document.getElementById('longitude').innerHTML = longitude2;    
                     L.marker([latitude2, longitude2]).addTo(map)
                     .bindPopup(msg2)
                     .openPopup();
@@ -102,11 +89,7 @@
                 var url2 = "https://geo.api.gouv.fr/communes?lat="+latitude2+"&lon="+longitude2+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
                 function reqListener () {
                     L.geoJson(JSON.parse(this.response)).addTo(map);
-                    document.getElementById('region').innerHTML = JSON.parse(this.response).features[0].properties.region.nom;
-                    document.getElementById('departement').innerHTML = JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ").";
-                    document.getElementById('commune').innerHTML = JSON.parse(this.response).features[0].properties.nom;
-                    document.getElementById('population').innerHTML = JSON.parse(this.response).features[0].properties.population + " habitants.";
-                    document.getElementById('surface').innerHTML = JSON.parse(this.response).features[0].properties.surface + " m2.";
+                    document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
                 }
                 var oReq = new XMLHttpRequest();
                 oReq.addEventListener("load", reqListener);
@@ -125,32 +108,25 @@
                     fillOpacity: 0.5,
                 }).addTo(map);
                 alert("La distance à vol d'oiseau entre le point choisi et votre position géolocalisée est de : \n" + (Math.round(findDistance(crd1.latitude, crd1.longitude, latitude2, longitude2)/1000)) + "km.");
-
                 });
 
 // Affichage de la carte
                 let carte = document.getElementById('map');		
                 carte.append(map);
-
             }
 
             function error(err) {console.warn(`ERREUR (${err.code}): ${err.message}`);}
     
             function findDistance(latA,lonA,latB,lonB) {
-                var R = 6371e3; // radius de la Terre
-
                 var latAradians = (latA)*Math.PI/180;
                 var latBradians = (latB)*Math.PI/180;
                 var latRadians = (latB-latA)*Math.PI/180;
                 var lonRadians = (lonB-lonA)*Math.PI/180;
-
                 var x = Math.sin(latRadians/2) * Math.sin(latRadians/2) +
                         Math.cos(latAradians) * Math.cos(latBradians) *
                         Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
                 var y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-
-                var distance = R * y;
-
+                var distance = y * 6371e3; // radius de la Terre
                 return distance;
             }
 
