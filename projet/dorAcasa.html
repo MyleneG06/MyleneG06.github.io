@@ -4,6 +4,7 @@
 	<head>
 		<title>dorAcasa</title>
 		<meta charset="utf-8"/>	
+		<link rel="icon" href="dorApp.png">
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
 		crossorigin=""/> <!-- leaflet-step1 -->
@@ -12,16 +13,22 @@
 	</head>
 	<body>  
         <div id="app" class="container-fluid">
-            <div class="row"><!-- INFOS COORDONNEES / API -->
-                <p id="position" class="info"></p>
-                <p id="infos" class="info"></p>
-                <span id="latitude" class="info" hidden></span></br><span id="longitude" class="info" hidden></span>
+            <div class="row">
+                <div>
+                    <button id="home" class="icon" onclick="window.location.href='menu.html';" style="float: left;"><img src="home.png" height="38px"/></button>
+                    <button id="reload" class="icon" onclick="window.location.href='dorAcasa.html';" style="float: right;"><img src="reload.png" height="38px"/></button>
+                </div>
+                <div style="padding: 10px;"><!-- INFOS COORDONNEES / API -->
+                    <p id="position" class="info" style="text-align: left;"></p>
+                    <p id="infos" class="info" style="text-align: right;"></p>
+                    <span id="latitude" class="info" hidden></span></br><span id="longitude" class="info" hidden></span>
+                </div>
+                <div style="text-align: center;"><!-- RAYON -->
+                    <input id="saisieRayon" placeholder="rayon en km" class="form-control-lg info"/></br>
+                    <button id="validRayon" class="btn btn-info btn-lg">Valider</button>
+                </div>
+                <div id="map"></div><!-- CARTE -->
             </div>
-            <div class="row"><!-- RAYON -->
-                <input id="saisieRayon" placeholder="rayon en km" />
-                <button id="validRayon" class="button">Valider</button></br> </br>
-            </div>
-            <div id="map" class="row"></div><!-- CARTE -->
         </div> 
 	
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -41,7 +48,7 @@
                 }).addTo(map);
 
 // Affichage de la position (avec altitude si accessible)
-                document.getElementById('position').innerHTML = "POSITION : </br>" + crd1.latitude +"(lat) - " + crd1.longitude + "(lon)";
+                document.getElementById('position').innerHTML = "POSITION : " + crd1.latitude +"(lat) - " + crd1.longitude + "(lon)";
                 var msg = 'vous êtes ici';
                 document.getElementById('latitude').innerHTML = crd1.latitude; 
                 document.getElementById('longitude').innerHTML = crd1.longitude; 
@@ -68,7 +75,7 @@
 
                 function reqListener () {
                     L.geoJson(JSON.parse(this.response)).addTo(map);
-                    document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
+                    document.getElementById('infos').innerHTML = "INFORMATIONS sur \" "+ JSON.parse(this.response).features[0].properties.nom +"\"</br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ") </br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants" + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2";
                 }
                 var oReq = new XMLHttpRequest();
                 oReq.addEventListener("load", reqListener);
@@ -80,7 +87,7 @@
                     var latitude2 = e.latlng.lat;
                     var longitude2 = e.latlng.lng
                     var msg2 = 'point choisi';
-                    document.getElementById('position').innerHTML = "POSITION : </br>" + latitude2 +"(lat) - " + longitude2 + "(lon)";
+                    document.getElementById('position').innerHTML = "POSITION : " + latitude2 +"(lat) - " + longitude2 + "(lon)";
                     document.getElementById('latitude').innerHTML = latitude2;
                     document.getElementById('longitude').innerHTML = longitude2;    
                     L.marker([latitude2, longitude2]).addTo(map)
@@ -91,7 +98,8 @@
                 var url2 = "https://geo.api.gouv.fr/communes?lat="+latitude2+"&lon="+longitude2+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
                 function reqListener () {
                     L.geoJson(JSON.parse(this.response)).addTo(map);
-                    document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
+                    document.getElementById('infos').innerHTML = "INFORMATIONS sur la commune de : "+ JSON.parse(this.response).features[0].properties.nom +"</br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ") </br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants" + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2";
+                    //document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
                 }
                 var oReq = new XMLHttpRequest();
                 oReq.addEventListener("load", reqListener);
