@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DorAdventure</title>
+    <title>DorAdventure6</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -197,7 +197,7 @@
 			let x = Math.sin(latRadians/2) * Math.sin(latRadians/2) + Math.cos(latAradians) * Math.cos(latBradians) * Math.sin(lonRadians/2) * Math.sin(lonRadians/2);
 			let y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
 			let distance = y * 6371e3; // earth’s radius;
-			return distance; 
+			return distance*10;  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		}
 
 //Draw  
