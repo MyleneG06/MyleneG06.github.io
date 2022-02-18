@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>commit16h18</title>
+    <title>commit16h54</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -76,29 +76,27 @@
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
 			currentP = pos.coords;
-		//if walking : zoom on my position, zoom check altitudes min/max
-			if (start.disabled == true){
+			if (start.disabled == true){//if walking : zoom on my position, zoom check altitudes min/max
 				zoomOnPosition(20);
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
-			//every 10' : calculate distance and track steps bigger than 10m
-				const myTimeout = setTimeout(() => {
-					if (findDistance(lastP,currentP) > 10) { //----------------------------------------------------------
+				const myTimeout = setTimeout(() => {//every 10' : calculate distance and track steps bigger than 10m
+					if (findDistance(lastP,currentP) > 10) { 
 						drawPoint([currentP.longitude, currentP.latitude], 5, '#0000FF'); // little blue walking point
 						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
 						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
 					}
-					distanceTot += (Math.round(findDistance(lastP, currentP)))/1000;
+					distanceTot += findDistance(endP, lastP);
 				}, 10000);			 
 			}
 		});
 
 //Center map on position
 		function zoomOnPosition(zoom) {
-			if (zoom == null) {zoom =18;}
+			if (zoom == null) {zoom =19;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
-			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br> "+ currentP.accuracy +"(ac)   -   "+ currentP.altitudeAccuracy +"(alt ac)." ;
+			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br>DISTANCE : " + Math.round(distanceTot);
 		}
     
 //Start button : track walking
@@ -126,17 +124,19 @@
 			drawPoint([endP.longitude, endP.latitude], 15, '#FF0000'); // big red ending point
 			drawLine([[endP.longitude, endP.latitude],[lastP.longitude, lastP.latitude]]); 
 		//update stats
-			distanceTot += (Math.round(findDistance(endP, lastP)))/1000;
+			distanceTot += findDistance(endP, lastP);
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 		//zoom out to show path
-			zoomOnPosition(16); //---------------------
+			zoomOnPosition(18); 
 		}
 
 //Stats button
 		function myPerf() {
 			stat.disabled = true;
-			info.innerHTML = "STATISTIQUES : </br>Distance totale en km : " + distanceTot + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax-altitudeMin)+").";
+			var unite = "m";
+			if (distanceTot >= 1000) {unite = "km"}
+			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax)-Math.round(altitudeMin) +" m).";
 		}
 
 //Compass orientation        
@@ -171,15 +171,15 @@
             gamma    = event.gamma;
             if(isNaN(rota_)) {
                 rota_ = compassHeading(alpha, beta, gamma);
-				iconStyle.getImage().setRotateWithView(1); //-----------
-				//iconStyle.getImage().setRotation(rota_);
+				//iconStyle.getImage().setRotateWithView(1); //-----------
+				iconStyle.getImage().setRotation(rota_); //-----------------------------------
             }else{
                 eski_yon = rota_;
                 rota_ = compassHeading(alpha, beta, gamma);   
             }
             if(rota_ != null && !isNaN(rota_)) {
                 map.getView().setRotation(rota_);
-				iconStyle.getImage().setRotateWithView(0); //-----------
+				//iconStyle.getImage().setRotateWithView(0); //-----------
             }
         }
 
@@ -205,9 +205,7 @@
 			var pointFill = new ol.style.Fill({color: colorP});
 			var circle = new ol.style.Circle({fill: pointFill, stroke: pointStroke, radius: radiusP});
 			var style = new ol.style.Style({image: circle});
-
 			var pointFeature = new ol.Feature({});
-
 			pointFeature.setStyle(style);
 			new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [pointFeature],}),});
 			pointFeature.setGeometry(coordP ? new ol.geom.Point(coordP) : null);
@@ -216,7 +214,7 @@
 		function drawLine(coordsList) {
 			var line = new ol.geom.LineString(coordsList);
 			var lineStyle= new ol.style.Style({
-				stroke: new ol.style.Stroke({color: '#FF0000',width: 3})
+				stroke: new ol.style.Stroke({color: '#0000FF',width: 3})
 			});
 			var lineFeature = new ol.Feature({
 				geometry: line
