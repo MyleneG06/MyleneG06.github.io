@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>commit17h02</title>
+    <title>commit17h45</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -86,9 +86,9 @@
 						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
 						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
 					}
-					distanceTot += findDistance(endP, lastP);
+					distanceTot += findDistance(currentP, lastP);
 				}, 10000);
-			    info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(alt) </br>DISTANCE : " + Math.round(distanceTot);
+			    info.innerHTML += "</br>" + Math.round(distanceTot) + "m de distance parcourue";
 			}
 		});
 
@@ -97,6 +97,7 @@
 			if (zoom == null) {zoom =19;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
+			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(alt)";
 		}
     
 //Start button : track walking
@@ -129,6 +130,7 @@
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 		//zoom out to show path
 			zoomOnPosition(18); 
+            info.innerHTML = "Vous avez parcouru une distance de : " + Math.round(distanceTot) + " m.";
 		}
 
 //Stats button
@@ -136,7 +138,7 @@
 			stat.disabled = true;
 			var unite = "m";
 			if (distanceTot >= 1000) {unite = "km"}
-			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>(soit un dénivelé de : "+ Math.round(altitudeMax)-Math.round(altitudeMin) +" m).";
+			info.innerHTML = "STATISTIQUES : </br>Distance totale : " + Math.round(distanceTot) + " " + unite + "</br>Altitude entre " + Math.round(altitudeMin) + " et " + Math.round(altitudeMax) +"</br>soit un dénivelé de : "+ (Math.round(altitudeMax)-Math.round(altitudeMin)) +" m.";
 		}
 
 //Compass orientation        
