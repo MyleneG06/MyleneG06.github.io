@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DorAdventure4</title>
+    <title>DorAdventure5</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -85,10 +85,10 @@
 						drawPoint([currentP.longitude, currentP.latitude], 5, '#0000FF'); // little blue walking point
 						drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
 						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
+                        distanceTot += findDistance(currentP, lastP);
+                        info.innerHTML += "</br>" + Math.round(distanceTot) + "m de distance parcourue";
 					}
-					distanceTot += findDistance(currentP, lastP);
 				}, 10000);
-			    info.innerHTML += "</br>" + Math.round(distanceTot) + "m de distance parcourue";
 			}
 		});
 
