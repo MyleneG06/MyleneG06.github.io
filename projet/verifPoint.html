@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>commit16h54</title>
+    <title>commit17h02</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -76,7 +76,7 @@
         navigator.geolocation.watchPosition(function(pos) {
             iconCar.setGeometry([pos.coords.longitude, pos.coords.latitude] ? new ol.geom.Point([pos.coords.longitude, pos.coords.latitude]) : null);
 			currentP = pos.coords;
-			if (start.disabled == true){//if walking : zoom on my position, zoom check altitudes min/max
+			if (start.disabled == true){//if walking : zoom on my position, check altitudes min/max
 				zoomOnPosition(20);
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
@@ -87,7 +87,8 @@
 						lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
 					}
 					distanceTot += findDistance(endP, lastP);
-				}, 10000);			 
+				}, 10000);
+			    info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(alt) </br>DISTANCE : " + Math.round(distanceTot);
 			}
 		});
 
@@ -96,7 +97,6 @@
 			if (zoom == null) {zoom =19;}
 			view.setZoom(zoom);
 			view.setCenter([currentP.longitude, currentP.latitude]);
-			info.innerHTML = "POSITION : " + currentP.latitude + "(lat) - " + currentP.longitude + "(lon) - " + Math.round(currentP.altitude) + "(m) </br>DISTANCE : " + Math.round(distanceTot);
 		}
     
 //Start button : track walking
