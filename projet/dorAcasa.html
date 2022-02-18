@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>App Mymy</title>
+		<title>dorAcasa</title>
 		<meta charset="utf-8"/>	
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -124,8 +124,7 @@
                     fillColor: '#03f',
                     fillOpacity: 0.5,
                 }).addTo(map);
-                distance = Math.round(findDistance(crd1.latitude, crd1.longitude, latitude2, longitude2)/1000);
-                alert("La distance à vol d'oiseau entre le point choisi et votre position géolocalisée est de : \n" + distance + "km.");
+                alert("La distance à vol d'oiseau entre le point choisi et votre position géolocalisée est de : \n" + (Math.round(findDistance(crd1.latitude, crd1.longitude, latitude2, longitude2)/1000)) + "km.");
 
                 });
 
