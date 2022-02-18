@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DorAdventure7</title>
+    <title>DorAdventure</title>
     <style>
         #app { width:100%; height:100%; margin:0; }
         #map { width:100%; height:100%; margin:0; position: absolute; z-index: 1;}
@@ -81,12 +81,13 @@
 				if (altitudeMin>currentP.altitude) {altitudeMin = currentP.altitude}
 				if (altitudeMax<currentP.altitude) {altitudeMax = currentP.altitude}
             //calculate distance and track steps bigger than 10m
-                if (findDistance(lastP,currentP) > 10) { 
+            var distance = findDistance(lastP,currentP);
+                if (distance > 10) { 
                     drawPoint([currentP.longitude, currentP.latitude], 5, '#0000FF'); // little blue walking point
                     drawLine([[currentP.longitude, currentP.latitude],[lastP.longitude, lastP.latitude]]); 
-                    lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
-                    distanceTot += findDistance(currentP, lastP);
+                    distanceTot += distance;
                     info.innerHTML += "</br>" + Math.round(distanceTot) + "m de distance parcourue";
+                    lastP = {latitude : currentP.latitude, longitude : currentP.longitude, altitude: currentP.altitude};//Change old coordinate to new for next operation
                 }
 			}
 		});
