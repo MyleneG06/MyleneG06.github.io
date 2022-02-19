@@ -11,6 +11,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 		<link rel="stylesheet" href="myStyle.css"/>
 	</head>
+
 	<body>  
         <div id="app" class="container-fluid">
             <div class="row">
@@ -18,16 +19,16 @@
                     <button id="home" class="icon" onclick="window.location.href='menu.html';" style="float: left;"><img src="home.png" height="38px"/></button>
                     <button id="reload" class="icon" onclick="window.location.href='dorAcasa.html';" style="float: right;"><img src="reload.png" height="38px"/></button>
                 </div>
-                <div style="padding: 10px;"><!-- INFOS COORDONNEES / API -->
+                <div style="padding: 10px;"><!-- INFOS COORDINATES / API -->
                     <p id="position" class="info" style="text-align: left;"></p>
                     <p id="infos" class="info" style="text-align: right;"></p>
                     <span id="latitude" class="info" hidden></span></br><span id="longitude" class="info" hidden></span>
                 </div>
-                <div style="text-align: center;"><!-- RAYON -->
+                <div style="text-align: center;"><!-- CIRCLE -->
                     <input id="saisieRayon" placeholder="rayon en km" class="form-control-lg info"/></br>
                     <button id="validRayon" class="btn btn-info btn-lg">Valider</button>
                 </div>
-                <div id="map"></div><!-- CARTE -->
+                <div id="map"></div><!-- MAP -->
             </div>
         </div> 
 	
@@ -40,14 +41,14 @@
             navigator.geolocation.getCurrentPosition(success, error);
 
             function success(pos) {				
-// Centrage de la carte autour des coordonnées
+            // Center map on coordinates 
                 var crd1 = pos.coords;
                 var map = L.map('map').setView([crd1.latitude, crd1.longitude], 10);          
                 L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://stamen-tiles-{S}.a.ssl.fastly.net">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-// Affichage de la position (avec altitude si accessible)
+            // Show position 
                 document.getElementById('position').innerHTML = "POSITION : " + crd1.latitude +"(lat) - " + crd1.longitude + "(lon)";
                 var msg = 'vous êtes ici';
                 document.getElementById('latitude').innerHTML = crd1.latitude; 
@@ -60,7 +61,7 @@
                     .bindPopup(msg)
                     .openPopup();
 
-// Affichage du rayon saisi
+            // Mark circle
                 document.getElementById('validRayon').addEventListener("click", function(){
                     var circle = L.circle([document.getElementById('latitude').innerText, document.getElementById('longitude').innerText], {
                         color: 'green',
@@ -70,7 +71,7 @@
                     }).addTo(map);
                 });
 
-// Contours de la commune sur la carte et des infos de l'API 
+            // get API info to show city limits
                 var url = "https://geo.api.gouv.fr/communes?lat="+document.getElementById('latitude').innerText+"&lon="+document.getElementById('longitude').innerText+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
 
                 function reqListener () {
@@ -82,7 +83,7 @@
                 oReq.open("GET", url);
                 oReq.send();       
 
-// Position choisie    
+            // choosen position    
                 map.on('click', function(e) {
                     var latitude2 = e.latlng.lat;
                     var longitude2 = e.latlng.lng
@@ -93,20 +94,8 @@
                     L.marker([latitude2, longitude2]).addTo(map)
                     .bindPopup(msg2)
                     .openPopup();
-    
-                // contours de la commune sur la carte et infos de l'API 
-                var url2 = "https://geo.api.gouv.fr/communes?lat="+latitude2+"&lon="+longitude2+"&fields=nom,code,codesPostaux,centre,surface,contour,codeDepartement,departement,codeRegion,region,population&format=geojson&geometry=contour";
-                function reqListener () {
-                    L.geoJson(JSON.parse(this.response)).addTo(map);
-                    document.getElementById('infos').innerHTML = "INFORMATIONS sur la commune de : "+ JSON.parse(this.response).features[0].properties.nom +"</br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ") </br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants" + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2";
-                    //document.getElementById('infos').innerHTML = "INFORMATIONS : </br>Région : " + JSON.parse(this.response).features[0].properties.region.nom + "</br>Département : " + JSON.parse(this.response).features[0].properties.departement.nom +" ("+JSON.parse(this.response).features[0].properties.departement.code + ")" + "</br>Commune : " + JSON.parse(this.response).features[0].properties.nom + + "</br>Population : " + JSON.parse(this.response).features[0].properties.population + " habitants." + "</br>Surface : " + JSON.parse(this.response).features[0].properties.surface + " m2.";
-                }
-                var oReq = new XMLHttpRequest();
-                oReq.addEventListener("load", reqListener);
-                oReq.open("GET", url2);
-                oReq.send();  
                 
-        // On affiche la distance entre les deux points
+            // show distance between two points
                 var msgd = "distance";
                 var distance = L.polygon([
                     [crd1.latitude, crd1.longitude], //position géolocalisée
@@ -120,7 +109,7 @@
                 alert("La distance à vol d'oiseau entre le point choisi et votre position géolocalisée est de : \n" + (Math.round(findDistance(crd1.latitude, crd1.longitude, latitude2, longitude2)/1000)) + "km.");
                 });
 
-// Affichage de la carte
+            // Show map
                 let carte = document.getElementById('map');		
                 carte.append(map);
             }

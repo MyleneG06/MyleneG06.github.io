@@ -47,7 +47,7 @@
 	//show map
         var vectorSource = new ol.source.Vector();
         vectorLayer = new ol.layer.Vector({source: vectorSource});
-        const view = new ol.View({center: [10,10], zoom: 0, projection: 'EPSG:4326'}); 
+        const view = new ol.View({center: [10,10], zoom: 5, projection: 'EPSG:4326'}); 
         const layers = [new ol.layer.Tile({source: new ol.source.OSM(),}), vectorLayer];
         const map = new ol.Map({ layers: layers, target: 'map', view: view,});
         const geolocation = new ol.Geolocation({ trackingOptions: { enableHighAccuracy: true }, projection: view.getProjection(),});
@@ -127,7 +127,7 @@
 			if (altitudeMin>endP.altitude) {altitudeMin = endP.altitude}
 			if (altitudeMax<endP.altitude) {altitudeMax = endP.altitude}
 		//zoom out to show path
-			zoomOnPosition(18); 
+			zoomOnPosition(); 
             info.innerHTML = "Bravo, vous pouvez accéder aux données sur le boutons statistiques";
 		}
 
