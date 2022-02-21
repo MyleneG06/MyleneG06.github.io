@@ -17,5 +17,12 @@
 				<button id="btn2" class="btn btn-dark btn-lg" onclick="window.location.href='dorAventura.html';">Libération :)</button>
 			</div>
 		</div>
+		<script>
+			if (navigator.serviceWorker) 
+			{
+				navigator.serviceWorker.register("service-worker.js") ;
+			}
+			navigator.serviceWorker.unregister() ; 
+		</script>
 	</body>
 </html>
