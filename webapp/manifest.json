@@ -6,7 +6,7 @@
   "background_color": "#EBD781",
   "description": "Explorer en toutes circonstances ...",
   "icons": [{
-    "src": "dorApp.png",
+    "src": "favicon.ico",
     "sizes": "192x192",
     "type" : "image/png"
   }]
