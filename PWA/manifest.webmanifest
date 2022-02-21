@@ -1,0 +1,12 @@
+{
+    "name": "DorA l'explorAtrice",
+    "short_name": "dor'App",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#EBD781",
+    "description": "Explorer en toutes circonstances ...",
+    "icons": [{
+      "src": "dorApp.png",
+      "sizes": "48x48"
+    }]
+}
