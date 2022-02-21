@@ -1,10 +1,10 @@
 {
-  "name": "DorA l'explorAtrice",
-  "short_name": "dor'App",
+  "name": "Mission Progressive Web Application",
+  "short_name": "Defi PWA",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#EBD781",
-  "description": "Explorer en toutes circonstances ...",
+  "description": "...",
   "theme_color" : "#3367D6",
   "icons": [{
     "src": "dorApp.png",
