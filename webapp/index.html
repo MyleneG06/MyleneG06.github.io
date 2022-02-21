@@ -19,11 +19,15 @@
 			</div>
 		</div>
 		<script>
-			// if (navigator.serviceWorker) 
-			// {
-			// 	navigator.serviceWorker.register("service-worker.js") ;
-			// }
-			// navigator.serviceWorker.unregister() ; 
+			if (navigator.serviceWorker) 
+			{
+				navigator.serviceWorker.register('/webapp/service-worker.js') ;
+			}
+			else 
+			{
+				navigator.serviceWorker.unregister() ;
+			}
+			
 		</script>
 	</body>
 </html>
